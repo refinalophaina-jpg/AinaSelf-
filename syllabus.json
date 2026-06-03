@@ -1,7 +1,20 @@
 {
   "meta": {
     "program_name": "Communication Mastery Blueprint",
-    "target_commute_mins": 23
+    "target_commute_mins": 23,
+    "blueprint_doc": "BLUEPRINT.md",
+    "daily_exports": [
+      "Energy State - State your mental bandwidth / exhaustion level when entering a shared space.",
+      "Micro-Bid Validation - Catch one casual observation, turn toward them, engage for 2+ sentences.",
+      "Unfinished Thought - Share one trivial or incomplete idea out loud; narrate, don't solve."
+    ],
+    "scripts": [
+      "Status Update - 'My brain is redlined; I'll be quiet to decompress, but glad to be home with you.'",
+      "Narration - 'I've been running through thoughts on [Topic]; not solved yet, but a window into my focus.'",
+      "Turning Toward - 'Yeah? Tell me a bit more about that.' (+1 follow-up context sentence)",
+      "Soft Opening - 'Something's on my mind and you matter to me. Can we carve out 10 calm minutes tonight?'",
+      "In-the-Moment Freeze - 'I'm overwhelmed and freezing, but not checking out. Give me two minutes to process.'"
+    ]
   },
   "modules": [
     {

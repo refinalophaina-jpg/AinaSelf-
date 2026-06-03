@@ -49,15 +49,30 @@ def print_dashboard(shift_type):
         print(f"        Read:   {mod['nightly_reading']['assignment']}")
 
     elif shift_type == "off":
+        syllabus = load_json(SYLLABUS_FILE)
+        exports = syllabus.get("meta", {}).get("daily_exports", [])
         print("\n[+] SHIFT STATE DETECTION: Scheduled Off-Day")
         print("    --> 🛋️ HIGH-EFFICIENCY DEEP READING BLOCK (30 Mins):")
         print(f"        Target Text: {mod['nightly_reading']['book']}")
         print(f"        Assignment:  {mod['nightly_reading']['assignment']}")
-        print("\n    --> 🧪 DAILY BEHAVIORAL PROTOCOL:")
-        print("        Execute the 3 'Daily Exports' from your Master Blueprint document.")
+        print("\n    --> 🧪 DAILY BEHAVIORAL PROTOCOL (3 Exports):")
+        for i, export in enumerate(exports, 1):
+            print(f"        {i}. {export}")
+        if not exports:
+            print("        Execute the 3 'Daily Exports' from your Master Blueprint document.")
 
     print("\n" + "="*60)
     print(" Run 'python comm_engine.py complete' once this step is fully implemented.")
+    print("="*60 + "\n")
+
+def print_scripts():
+    syllabus = load_json(SYLLABUS_FILE)
+    scripts = syllabus.get("meta", {}).get("scripts", [])
+    print("\n" + "="*60)
+    print(" STRUCTURED SCRIPTS - DAILY STANDARD OPERATING PROCEDURES")
+    print("="*60 + "\n")
+    for i, script in enumerate(scripts, 1):
+        print(f"    {i}. {script}\n")
     print("="*60 + "\n")
 
 def complete_step():
@@ -77,12 +92,14 @@ if __name__ == "__main__":
     init_progress()
     if len(sys.argv) < 2:
         print("\nUsage Error: Specify shift condition or progression.")
-        print("Commands: python comm_engine.py [morning | evening | off | complete]\n")
+        print("Commands: python comm_engine.py [morning | evening | off | scripts | complete]\n")
         sys.exit(1)
 
     cmd = sys.argv[1].lower()
     if cmd in ["morning", "evening", "off"]:
         print_dashboard(cmd)
+    elif cmd == "scripts":
+        print_scripts()
     elif cmd == "complete":
         complete_step()
     else:
