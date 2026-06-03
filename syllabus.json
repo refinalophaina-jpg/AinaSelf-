@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "program_name": "Communication Mastery Blueprint",
+    "target_commute_mins": 23,
+    "blueprint_doc": "BLUEPRINT.md",
+    "daily_exports": [
+      "Energy State - State your mental bandwidth / exhaustion level when entering a shared space.",
+      "Micro-Bid Validation - Catch one casual observation, turn toward them, engage for 2+ sentences.",
+      "Unfinished Thought - Share one trivial or incomplete idea out loud; narrate, don't solve."
+    ],
+    "scripts": [
+      "Status Update - 'My brain is redlined; I'll be quiet to decompress, but glad to be home with you.'",
+      "Narration - 'I've been running through thoughts on [Topic]; not solved yet, but a window into my focus.'",
+      "Turning Toward - 'Yeah? Tell me a bit more about that.' (+1 follow-up context sentence)",
+      "Soft Opening - 'Something's on my mind and you matter to me. Can we carve out 10 calm minutes tonight?'",
+      "In-the-Moment Freeze - 'I'm overwhelmed and freezing, but not checking out. Give me two minutes to process.'"
+    ]
+  },
+  "modules": [
+    {
+      "step": 1,
+      "title": "Mapping the 3 Nested Conversations",
+      "to_work_audio": {
+        "title": "Think Fast, Talk Smart: How to Handle Difficult Conversations",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268"
+      },
+      "from_work_audio": {
+        "title": "Where Should We Begin? (Esther Perel) - Case Analysis Part 1",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel"
+      },
+      "nightly_reading": {
+        "book": "Difficult Conversations",
+        "assignment": "Chapter 1: Read the Underlying Structure"
+      }
+    },
+    {
+      "step": 2,
+      "title": "Dismantling the Identity Quake",
+      "to_work_audio": {
+        "title": "Think Fast, Talk Smart: Quick Thinker - Spontaneous Communication",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268"
+      },
+      "from_work_audio": {
+        "title": "Where Should We Begin? (Esther Perel) - Case Analysis Part 2",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel"
+      },
+      "nightly_reading": {
+        "book": "Difficult Conversations",
+        "assignment": "Chapter 6: The Identity Conversation - Ask Yourself What's at Stake"
+      }
+    },
+    {
+      "step": 3,
+      "title": "Establishing Conversational Safety",
+      "to_work_audio": {
+        "title": "Huberman Lab: The Science & Psychology of Relationships (Segment 1)",
+        "url": "https://www.youtube.com/watch?v=NEkUNahduWY"
+      },
+      "from_work_audio": {
+        "title": "Where Should We Begin? (Esther Perel) - New Case Analysis Part 1",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel"
+      },
+      "nightly_reading": {
+        "book": "Crucial Conversations",
+        "assignment": "Chapter 5: Make It Safe - How to Make It Safe to Talk About Almost Anything"
+      }
+    },
+    {
+      "step": 4,
+      "title": "Mastering Internal Narratives",
+      "to_work_audio": {
+        "title": "Think Fast, Talk Smart: Speak Like a Leader",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268"
+      },
+      "from_work_audio": {
+        "title": "Where Should We Begin? (Esther Perel) - New Case Analysis Part 2",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel"
+      },
+      "nightly_reading": {
+        "book": "Crucial Conversations",
+        "assignment": "Chapter 6: Master My Stories - How to Stay in Dialogue"
+      }
+    },
+    {
+      "step": 5,
+      "title": "Overcoming the Loner Baseline",
+      "to_work_audio": {
+        "title": "Huberman Lab: The Science & Psychology of Relationships (Segment 2)",
+        "url": "https://www.youtube.com/watch?v=NEkUNahduWY"
+      },
+      "from_work_audio": {
+        "title": "Decompression & Behavioral Reflection Cycle",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel"
+      },
+      "nightly_reading": {
+        "book": "The Relationship Cure",
+        "assignment": "Chapter 3: Bids for Connection"
+      }
+    }
+  ]
+}

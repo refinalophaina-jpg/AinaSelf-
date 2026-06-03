@@ -1,0 +1,284 @@
+{
+  "books": [
+    {
+      "id": "difficult_conversations",
+      "title": "Difficult Conversations",
+      "subtitle": "How to Discuss What Matters Most",
+      "authors": "Stone, Patton & Heen",
+      "year": 1999,
+      "archive_id": "difficultconvers00doug",
+      "borrow_url": "https://archive.org/details/difficultconvers00doug",
+      "cover_color": "#7c3aed",
+      "chapters": [
+        {
+          "number": 1,
+          "title": "Sort Out the Three Conversations",
+          "assigned_module": 1,
+          "key_concepts": [
+            "Every hard conversation is 3 simultaneous sub-conversations",
+            "What Happened layer — competing facts, intent, blame",
+            "Feelings layer — unspoken emotional fuel driving the exchange",
+            "Identity layer — internal threat to self-image; the freeze engine"
+          ],
+          "summary": "The opening chapter reveals that what looks like one conversation is actually three occurring simultaneously. The 'What Happened' layer traps us in arguments about who is right. The 'Feelings' layer carries the true emotional fuel of the exchange. The 'Identity' layer — the internal monologue about what this means for who you are — is precisely where paralysis lives. Recognizing these three layers is the first diagnostic move.",
+          "key_quote": "The single most important thing you can do is shift your internal stance from 'I understand the situation' to 'I wonder what they are experiencing.'"
+        },
+        {
+          "number": 6,
+          "title": "Ground Your Identity",
+          "assigned_module": 2,
+          "key_concepts": [
+            "Identity quake: perceived threat to Am I competent? Am I good? Am I worthy?",
+            "All-or-nothing identity thinking causes the verbal freeze",
+            "Complex identity tolerates mistakes without collapsing",
+            "Contribution maps replace blame; both parties contributed to the dynamic"
+          ],
+          "summary": "Chapter 6 targets the root of communication paralysis. When a discussion threatens one of three core identity anchors — competence, goodness, or lovability — the brain perceives an existential threat and shuts down verbal output to protect the self. The antidote is building a complex, nuanced self-concept that can simultaneously hold 'I made a mistake' and 'I am still capable' without triggering a system shutdown.",
+          "key_quote": "Letting go of the need to keep your identity simple and stable does not mean abandoning your values. It means understanding that they are not threatened by hard conversations."
+        }
+      ]
+    },
+    {
+      "id": "crucial_conversations",
+      "title": "Crucial Conversations",
+      "subtitle": "Tools for Talking When Stakes Are High",
+      "authors": "Patterson, Grenny, McMillan & Switzler",
+      "year": 2002,
+      "archive_id": "crucialconversat00patt",
+      "borrow_url": "https://archive.org/details/crucialconversat00patt",
+      "cover_color": "#1d4ed8",
+      "chapters": [
+        {
+          "number": 5,
+          "title": "Make It Safe",
+          "assigned_module": 3,
+          "key_concepts": [
+            "Safety is the prerequisite for rational dialogue — without it, dialogue dies",
+            "Silence modes: masking (sarcasm), avoiding, withdrawing",
+            "Violence modes: controlling (dominating), labeling, attacking",
+            "Mutual Purpose: working toward a common outcome",
+            "Contrasting statement: clarify what you don't mean, then what you do mean"
+          ],
+          "summary": "Safety is non-negotiable. When people feel unsafe in dialogue, they default to silence (withdraw, mask, avoid) or violence (control, label, attack). This chapter trains you to monitor for those safety breaks the moment they appear and deploy specific repair moves — especially the Contrasting Statement — to restore the conditions for honest conversation before the content becomes toxic.",
+          "key_quote": "The first condition of safety is Mutual Purpose — that others believe we are working toward a common outcome in the conversation, and that we care about their goals, interests, and values."
+        },
+        {
+          "number": 6,
+          "title": "Master My Stories",
+          "assigned_module": 4,
+          "key_concepts": [
+            "Path to Action: Event → Story → Feeling → Behavior (freeze or act)",
+            "Emotions are triggered by the story, not the raw event",
+            "Victim Stories: exaggerating innocence, ignoring own contribution",
+            "Villain Stories: overemphasizing bad intent, no credit to other",
+            "Helpless Stories: silence is the only logical option (it never is)",
+            "Useful Story: 'What do I want for this relationship right now?'"
+          ],
+          "summary": "The chapter dismantles the myth that events cause emotions directly. Between what you see or hear and how you feel, your brain runs a rapid interpretive story. Those stories — Victim, Villain, Helpless — are the actual source of silence and freeze, not the event itself. The chapter trains you to intercept the story in the milliseconds after an event, before it hardens into behavior you can't undo.",
+          "key_quote": "Clever stories are incomplete stories. They leave out crucial information — about us, about others, and about our options — and the incompleteness is precisely what makes them feel so convincing."
+        }
+      ]
+    },
+    {
+      "id": "relationship_cure",
+      "title": "The Relationship Cure",
+      "subtitle": "A 5-Step Guide to Strengthening Your Marriage, Family, and Friendships",
+      "authors": "John Gottman & Joan DeClaire",
+      "year": 2001,
+      "archive_id": "isbn_9780609608098",
+      "borrow_url": "https://archive.org/details/isbn_9780609608098",
+      "cover_color": "#059669",
+      "chapters": [
+        {
+          "number": 3,
+          "title": "Bids for Connection",
+          "assigned_module": 5,
+          "key_concepts": [
+            "A bid is any attempt — word, gesture, expression, touch — to connect emotionally",
+            "Turn toward (acknowledge) vs turn away (miss) vs turn against (reject)",
+            "Individualists habitually treat bids as low-utility noise; they are not",
+            "Each missed bid is a withdrawal from the relationship's emotional bank",
+            "Lower your internal threshold for what is 'worth responding to'"
+          ],
+          "summary": "Gottman's research identifies bids for connection as the fundamental currency of relationships. A bid can be as small as a sigh, a glance, or a casual comment. Turning toward bids — even minimally — builds the emotional reserve that relationships draw on during conflict and stress. Individualistic thinkers tend to process bids as low-priority signals, systematically depleting that reserve without realizing it.",
+          "key_quote": "The bid is the fundamental unit of emotional connection — the atom of intimacy from which all relationship security is built."
+        }
+      ]
+    }
+  ],
+  "media": {
+    "to_work": [
+      {
+        "module": 1,
+        "title": "How to Handle Difficult Conversations",
+        "show": "Think Fast, Talk Smart",
+        "network": "Stanford GSB",
+        "platform": "Apple Podcasts",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "Mapping the 3 Conversations"
+      },
+      {
+        "module": 2,
+        "title": "Quick Thinker — Spontaneous Communication",
+        "show": "Think Fast, Talk Smart",
+        "network": "Stanford GSB",
+        "platform": "Apple Podcasts",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 21,
+        "theme": "Identity & Spontaneous Response"
+      },
+      {
+        "module": 3,
+        "title": "Science & Psychology of Relationships — Segment 1",
+        "show": "Huberman Lab",
+        "network": "Andrew Huberman",
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=NEkUNahduWY",
+        "youtube_id": "NEkUNahduWY",
+        "timestamp": 0,
+        "duration_mins": 23,
+        "theme": "Neural Basis of Safety"
+      },
+      {
+        "module": 4,
+        "title": "Speak Like a Leader",
+        "show": "Think Fast, Talk Smart",
+        "network": "Stanford GSB",
+        "platform": "Apple Podcasts",
+        "url": "https://podcasts.apple.com/us/podcast/think-fast-talk-smart-communication-techniques/id1494989268",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 23,
+        "theme": "Mastering Internal Narratives"
+      },
+      {
+        "module": 5,
+        "title": "Science & Psychology of Relationships — Segment 2",
+        "show": "Huberman Lab",
+        "network": "Andrew Huberman",
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=NEkUNahduWY&t=1380",
+        "youtube_id": "NEkUNahduWY",
+        "timestamp": 1380,
+        "duration_mins": 23,
+        "theme": "Attachment & Connection Bids"
+      }
+    ],
+    "from_work": [
+      {
+        "module": 1,
+        "title": "Case Analysis — Part 1",
+        "show": "Where Should We Begin?",
+        "network": "Esther Perel",
+        "platform": "Podcast",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "Relationship Dynamics in Practice"
+      },
+      {
+        "module": 2,
+        "title": "Case Analysis — Part 2",
+        "show": "Where Should We Begin?",
+        "network": "Esther Perel",
+        "platform": "Podcast",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "Identity Under Relationship Pressure"
+      },
+      {
+        "module": 3,
+        "title": "New Case Analysis — Part 1",
+        "show": "Where Should We Begin?",
+        "network": "Esther Perel",
+        "platform": "Podcast",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "When Safety Has Broken Down"
+      },
+      {
+        "module": 4,
+        "title": "New Case Analysis — Part 2",
+        "show": "Where Should We Begin?",
+        "network": "Esther Perel",
+        "platform": "Podcast",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "The Stories Couples Tell"
+      },
+      {
+        "module": 5,
+        "title": "Decompression & Behavioral Reflection",
+        "show": "Where Should We Begin?",
+        "network": "Esther Perel",
+        "platform": "Podcast",
+        "url": "https://podcasts.voxmedia.com/show/where-should-we-begin-with-esther-perel",
+        "youtube_id": null,
+        "timestamp": 0,
+        "duration_mins": 22,
+        "theme": "Integrating the Loner Shift"
+      }
+    ]
+  },
+  "scripts": [
+    {
+      "id": "status_update",
+      "name": "Status Update",
+      "trigger": "Entering shared space after a heavy day",
+      "text": "Hey, I had an incredibly heavy day and my brain is completely redlined right now. I'm going to be pretty quiet tonight just to decompress and recharge, but I want you to know I'm really glad to be home here with you."
+    },
+    {
+      "id": "narration",
+      "name": "The Narration",
+      "trigger": "Silently processing something for hours or days",
+      "text": "I've been running through some thoughts in my head today about [Topic]. I don't have it fully mapped out or solved yet, but I wanted to give you a quick window into where my focus has been."
+    },
+    {
+      "id": "turning_toward",
+      "name": "Turning Toward",
+      "trigger": "Partner makes a casual remark or observation",
+      "text": "Yeah? Tell me a bit more about that. / That sounds frustrating — where exactly did that happen?"
+    },
+    {
+      "id": "soft_opening",
+      "name": "The Soft Opening",
+      "trigger": "Need to raise a difficult topic safely",
+      "text": "There is something on my mind that has been tough for me to articulate, but our relationship is incredibly important to me and I want to be completely open. Can we carve out 10 minutes to talk through it calmly tonight?"
+    },
+    {
+      "id": "freeze_response",
+      "name": "In-the-Moment Freeze",
+      "trigger": "Brain locks up mid-conversation",
+      "text": "I am feeling really overwhelmed right now and my brain is freezing up, but I want you to know I am not checking out or ignoring you. Please give me just two minutes to breathe and process what you said, and then I will reply."
+    }
+  ],
+  "exports": [
+    {
+      "name": "Energy State",
+      "prompt": "What is your current mental bandwidth / exhaustion level?",
+      "example": "My brain is redlined — I'm at about 20% right now."
+    },
+    {
+      "name": "Micro-Bid Validation",
+      "prompt": "Catch one casual statement. Turn toward. Engage for 2+ sentences.",
+      "example": "Yeah? Tell me more — where did that happen?"
+    },
+    {
+      "name": "Unfinished Thought",
+      "prompt": "Share one trivial or incomplete idea out loud. Narrate, don't solve.",
+      "example": "I've been thinking about [X] — no answer yet, just wanted to say it out loud."
+    }
+  ]
+}
