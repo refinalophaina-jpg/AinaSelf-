@@ -5,83 +5,145 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#7c5cbf">
-  <title>Communication Mastery Blueprint</title>
+  <meta name="theme-color" content="#c9a227">
+  <title>Communication Mastery — Aina Dara</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 </head>
 <body>
   <div class="app-shell">
+
+    <!-- ── App Header ─────────────────────────────────────────── -->
     <header class="app-header">
       <div class="header-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M12 6v6l4 2"/>
         </svg>
-        Comm Mastery
+        Aina Dara
       </div>
       <div class="header-step" id="header-step">Step 1 of 5</div>
     </header>
 
+    <!-- ── View Container ─────────────────────────────────────── -->
     <div class="view-container">
-      <section id="view-today" class="view active"></section>
-      <section id="view-read"  class="view"></section>
-      <section id="view-listen" class="view"></section>
-      <section id="view-watch" class="view"></section>
-      <section id="view-more"  class="view"></section>
+
+      <!-- HOME view -->
+      <section id="view-home" class="view active"></section>
+
+      <!-- LIBRARY view -->
+      <section id="view-library" class="view">
+        <div class="library-layout">
+          <!-- Left: Book Navigator -->
+          <div class="library-nav" id="library-nav">
+            <div class="library-nav-inner"></div>
+          </div>
+          <!-- Right: Reader Panel -->
+          <div class="library-reader" id="library-reader">
+            <div class="reader-placeholder">
+              <div class="reader-placeholder-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+              </div>
+              <p>Select a book and chapter to begin reading.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Mobile TOC dropdown (hidden on wide screens) -->
+        <div class="library-mobile-toc" id="library-mobile-toc">
+          <select id="library-toc-select">
+            <option value="">— Select a chapter —</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- MEDIA view -->
+      <section id="view-media" class="view"></section>
+
+      <!-- PRACTICE view -->
+      <section id="view-practice" class="view"></section>
+
+      <!-- MAP view -->
+      <section id="view-map" class="view"></section>
+
     </div>
 
+    <!-- ── Bottom Navigation ──────────────────────────────────── -->
     <nav class="bottom-nav">
-      <button class="nav-item active" data-view="today">
+      <button class="nav-item active" data-view="home">
         <span class="nav-icon">
+          <!-- House icon -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+            <path d="M9 21V12h6v9"/>
           </svg>
         </span>
-        <span class="nav-label">Today</span>
+        <span class="nav-label">Home</span>
       </button>
-      <button class="nav-item" data-view="read">
+      <button class="nav-item" data-view="library">
         <span class="nav-icon">
+          <!-- Open book icon -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
         </span>
-        <span class="nav-label">Read</span>
+        <span class="nav-label">Library</span>
       </button>
-      <button class="nav-item" data-view="listen">
+      <button class="nav-item" data-view="media">
         <span class="nav-icon">
+          <!-- Play circle icon -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
             <circle cx="12" cy="12" r="10"/>
-            <circle cx="12" cy="12" r="3"/>
-            <line x1="12" y1="2" x2="12" y2="5"/>
-            <line x1="12" y1="19" x2="12" y2="22"/>
-            <line x1="2" y1="12" x2="5" y2="12"/>
-            <line x1="19" y1="12" x2="22" y2="12"/>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
           </svg>
         </span>
-        <span class="nav-label">Listen</span>
+        <span class="nav-label">Media</span>
       </button>
-      <button class="nav-item" data-view="watch">
+      <button class="nav-item" data-view="practice">
         <span class="nav-icon">
+          <!-- Speech bubble with lines icon -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-            <rect x="2" y="7" width="20" height="15" rx="2"/>
-            <polyline points="17 2 12 7 7 2"/>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <line x1="8" y1="9" x2="16" y2="9"/>
+            <line x1="8" y1="13" x2="13" y2="13"/>
           </svg>
         </span>
-        <span class="nav-label">Watch</span>
+        <span class="nav-label">Practice</span>
       </button>
-      <button class="nav-item" data-view="more">
+      <button class="nav-item" data-view="map">
         <span class="nav-icon">
+          <!-- Grid/compass icon -->
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-            <circle cx="12" cy="5" r="1" fill="currentColor"/>
-            <circle cx="12" cy="12" r="1" fill="currentColor"/>
-            <circle cx="12" cy="19" r="1" fill="currentColor"/>
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke-width="1.5"/>
           </svg>
         </span>
-        <span class="nav-label">More</span>
+        <span class="nav-label">Map</span>
       </button>
     </nav>
+
+  </div>
+
+  <!-- Archive.org Overlay Modal -->
+  <div class="archive-overlay" id="archive-overlay" aria-hidden="true">
+    <div class="archive-modal">
+      <div class="archive-modal-header">
+        <span class="archive-modal-title" id="archive-modal-title">Reading on Archive.org</span>
+        <button class="archive-close-btn" id="archive-close-btn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="archive-modal-body">
+        <iframe id="archive-iframe" src="" allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

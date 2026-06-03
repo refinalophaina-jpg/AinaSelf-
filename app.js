@@ -1,10 +1,16 @@
 /* ============================================================
-   Communication Mastery Blueprint — PWA Application
+   Aina Dara — Communication Mastery Hub
    ============================================================ */
 
 // --- Constants & State -------------------------------------
 
-const MODULE_COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899'];
+const MODULE_COLORS = [
+  '#9966dd', // m1 — purple
+  '#4488cc', // m2 — blue
+  '#33aa88', // m3 — teal
+  '#cc8822', // m4 — amber
+  '#cc5577'  // m5 — rose
+];
 
 const MODULE_TITLES = [
   'Mapping the 3 Nested Conversations',
@@ -14,9 +20,19 @@ const MODULE_TITLES = [
   'Overcoming the Loner Baseline'
 ];
 
+const MODULE_CONCEPTS = [
+  'Three nested conversations: What Happened, Feelings, Identity. The Identity layer is the freeze engine.',
+  'Identity quake: threat to competence, goodness, or lovability. All-or-nothing thinking causes verbal shutdown.',
+  'Psychological safety is the prerequisite for honest dialogue. Silence vs. Violence modes.',
+  'The Path to Action: Event → Story → Feeling → Act. The story (not the event) causes the freeze.',
+  'The loner baseline: closed-system processing. Bids for connection are the currency of intimacy.'
+];
+
 const PROGRESS_KEY = 'cmb_progress';
 
 let DATA = null;
+
+// --- Progress ---------------------------------------------
 
 function loadProgress() {
   try {
@@ -52,12 +68,8 @@ if ('serviceWorker' in navigator) {
 function initNav() {
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
-      const viewId = 'view-' + btn.dataset.view;
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      btn.classList.add('active');
-      const view = document.getElementById(viewId);
-      if (view) view.classList.add('active');
+      const viewName = btn.dataset.view;
+      switchToView(viewName);
     });
   });
 }
@@ -86,12 +98,9 @@ function moduleColor(step) {
   return MODULE_COLORS[(step - 1) % MODULE_COLORS.length];
 }
 
-function moduleColorForIndex(i) {
-  return MODULE_COLORS[i % MODULE_COLORS.length];
-}
-
-function chevronSVG() {
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+function chevronSVG(size) {
+  const s = size || 18;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="${s}" height="${s}">
     <polyline points="6 9 12 15 18 9"/>
   </svg>`;
 }
@@ -103,12 +112,6 @@ function formatTimestamp(seconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function platformIcon(platform) {
-  if (platform === 'YouTube') return '📺';
-  return '🎙';
-}
-
-// Find chapter for a given module step
 function findChapterForStep(step) {
   for (const book of DATA.books) {
     for (const ch of book.chapters) {
@@ -120,132 +123,7 @@ function findChapterForStep(step) {
   return null;
 }
 
-// --- Render All --------------------------------------------
-
-function renderAll() {
-  progress = loadProgress();
-  document.getElementById('header-step').textContent =
-    `Step ${progress.current_step} of 5`;
-
-  renderToday();
-  renderRead();
-  renderListen();
-  renderWatch();
-  renderMore();
-}
-
-// ===========================================================
-// TODAY VIEW
-// ===========================================================
-
-function renderToday() {
-  const step = progress.current_step;
-  const color = moduleColor(step);
-  const title = MODULE_TITLES[step - 1];
-
-  const toWork = DATA.media.to_work[step - 1];
-  const fromWork = DATA.media.from_work[step - 1];
-  const chapterData = findChapterForStep(step);
-
-  // Progress dots
-  let dotsHTML = '';
-  for (let i = 1; i <= 5; i++) {
-    let cls = 'future';
-    if (progress.completed_steps.includes(i)) cls = 'completed';
-    else if (i === step) cls = 'current';
-    dotsHTML += `<div class="progress-dot ${cls}" title="Step ${i}: ${MODULE_TITLES[i-1]}"></div>`;
-  }
-
-  // Complete button state
-  const allDone = progress.completed_steps.length === 5 ||
-    (progress.completed_steps.includes(step) && step === 5);
-  const btnLabel = allDone
-    ? '🌟 Full Sequence Complete'
-    : `Mark Step ${step} Complete ✓`;
-
-  // Book/chapter section
-  let readingHTML = '';
-  if (chapterData) {
-    const { book, chapter } = chapterData;
-    readingHTML = `
-      <div class="card">
-        <div class="commute-label">📖 TONIGHT</div>
-        <div class="reading-book-title">${esc(book.title)}</div>
-        <div class="reading-chapter">Chapter ${chapter.number}: ${esc(chapter.title)}</div>
-        <div class="reading-actions">
-          <button class="btn btn-primary" id="btn-read-summary"
-            data-book="${esc(book.id)}" data-ch="${chapter.number}">
-            Read Summary
-          </button>
-          <a class="btn btn-outline" href="${esc(book.borrow_url)}"
-            target="_blank" rel="noopener noreferrer">
-            Borrow Full Book ↗
-          </a>
-        </div>
-      </div>`;
-  }
-
-  const view = document.getElementById('view-today');
-  view.innerHTML = `
-    <div class="module-banner">
-      <div class="module-step-label">STEP ${step} OF 5</div>
-      <div class="module-title">${esc(title)}</div>
-      <div class="progress-dots">${dotsHTML}</div>
-    </div>
-
-    ${toWork ? renderCommuteCard(toWork, '🚗 TO WORK') : ''}
-    ${fromWork ? renderCommuteCard(fromWork, '🚗 FROM WORK') : ''}
-    ${readingHTML}
-
-    <div class="section-heading">🧪 DAILY EXPORTS</div>
-    ${DATA.exports.map((ex, i) => `
-      <div class="export-card">
-        <div class="export-number">${i + 1}</div>
-        <div class="export-content">
-          <div class="export-name">${esc(ex.name)}</div>
-          <div class="export-prompt">${esc(ex.prompt)}</div>
-          <div class="export-example">"${esc(ex.example)}"</div>
-        </div>
-      </div>`).join('')}
-
-    <button class="btn btn-success" id="btn-complete" ${allDone ? 'disabled' : ''}>
-      ${btnLabel}
-    </button>
-  `;
-
-  // Wire up "Read Summary" button
-  const readBtn = view.querySelector('#btn-read-summary');
-  if (readBtn) {
-    readBtn.addEventListener('click', () => {
-      const bookId = readBtn.dataset.book;
-      const chNum = parseInt(readBtn.dataset.ch, 10);
-      switchToView('read');
-      // Wait a tick for render, then open the right section
-      setTimeout(() => openBookAndChapter(bookId, chNum), 50);
-    });
-  }
-
-  // Wire up complete button
-  const completeBtn = view.querySelector('#btn-complete');
-  if (completeBtn && !allDone) {
-    completeBtn.addEventListener('click', () => {
-      const p = loadProgress();
-      if (p.current_step === 5 && !p.completed_steps.includes(5)) {
-        p.completed_steps.push(5);
-        saveProgress(p);
-        renderAll();
-        alert('🌟 Full Sequence Complete! You have finished all 5 modules.');
-      } else if (p.current_step < 5) {
-        if (!p.completed_steps.includes(p.current_step)) {
-          p.completed_steps.push(p.current_step);
-        }
-        p.current_step = p.current_step + 1;
-        saveProgress(p);
-        renderAll();
-      }
-    });
-  }
-}
+// --- YouTube Embed -----------------------------------------
 
 function renderYTEmbed(item, uid) {
   if (!item.youtube_id) return '';
@@ -260,337 +138,508 @@ function renderYTEmbed(item, uid) {
     </div>`;
 }
 
-function renderCommuteCard(item, label) {
-  const uid = `embed-${label.replace(/\W+/g, '-')}-m${item.module}`;
-  const durationLabel = `${item.duration_mins} MIN`;
-  const tsNote = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
+// --- Render All --------------------------------------------
 
-  const playRow = item.youtube_id
-    ? `<button class="btn btn-play" data-toggle-embed="${uid}">▶ Play Here</button>
-       <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗ YouTube</a>`
-    : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">▶ PLAY</a>`;
+function renderAll() {
+  progress = loadProgress();
+  document.getElementById('header-step').textContent =
+    `Step ${progress.current_step} of 5`;
 
-  return `
-    <div class="card">
-      <div class="commute-label">${label} · ${durationLabel}${tsNote}</div>
-      <div class="commute-title">${esc(item.title)}</div>
-      <div class="commute-show">${esc(item.show)} · ${esc(item.network)}</div>
-      <div class="commute-row">
-        ${playRow}
-        <span class="badge badge-platform">${esc(item.platform)}</span>
-      </div>
-      ${renderYTEmbed(item, uid)}
-    </div>`;
+  renderHome();
+  renderLibrary();
+  renderMedia();
+  renderPractice();
+  renderMap();
 }
 
 // ===========================================================
-// READ VIEW
+// HOME VIEW
 // ===========================================================
 
-function renderRead() {
-  const view = document.getElementById('view-read');
+function renderHome() {
   const step = progress.current_step;
+  const color = moduleColor(step);
+  const title = MODULE_TITLES[step - 1];
 
-  let html = '<div class="section-heading">READING LIBRARY</div>';
+  const toWork = DATA.media.to_work[step - 1];
+  const fromWork = DATA.media.from_work[step - 1];
+  const chapterData = findChapterForStep(step);
 
+  // Progress bar segments
+  let segmentsHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    let cls = '';
+    if (progress.completed_steps.includes(i)) cls = 'done';
+    else if (i === step) cls = 'current';
+    segmentsHTML += `<div class="seg ${cls}" title="Step ${i}: ${MODULE_TITLES[i-1]}"></div>`;
+  }
+
+  // Complete button state
+  const isAllDone = progress.completed_steps.length === 5;
+  const btnLabel = isAllDone
+    ? 'Full Sequence Complete'
+    : `Mark Step ${step} Complete`;
+
+  // Tonight's reading
+  let readingHTML = '';
+  if (chapterData) {
+    const { book, chapter } = chapterData;
+    readingHTML = `
+      <div class="reading-card">
+        <div class="reading-label">Tonight's Reading</div>
+        <div class="reading-book-title">${esc(book.title)}</div>
+        <div class="reading-chapter">Chapter ${chapter.number}: ${esc(chapter.title)}</div>
+        <div class="reading-actions">
+          <button class="btn btn-primary" id="btn-read-summary"
+            data-book="${esc(book.id)}" data-ch="${chapter.number}">
+            Read Summary
+          </button>
+          <a class="btn btn-outline" href="${esc(book.borrow_url)}"
+            target="_blank" rel="noopener noreferrer">
+            Borrow Book ↗
+          </a>
+        </div>
+      </div>`;
+  }
+
+  // Commute cards
+  const toWorkUID = `embed-home-tw-m${step}`;
+  const fromWorkUID = `embed-home-fw-m${step}`;
+
+  function commuteCard(item, label, uid) {
+    if (!item) return '';
+    const tsNote = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
+    const durationLabel = `${item.duration_mins} min${tsNote}`;
+    const playBtn = item.youtube_id
+      ? `<button class="btn btn-play" data-toggle-embed="${uid}">&#9654; Play Here</button>
+         <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#8599; YouTube</a>`
+      : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#9654; Play</a>`;
+
+    return `
+      <div class="commute-card">
+        <div class="commute-label">${label} &middot; ${durationLabel}</div>
+        <div class="commute-title">${esc(item.title)}</div>
+        <div class="commute-show">${esc(item.show)}</div>
+        <div class="commute-actions">
+          ${playBtn}
+        </div>
+        ${item.youtube_id ? renderYTEmbed(item, uid) : ''}
+      </div>`;
+  }
+
+  const view = document.getElementById('view-home');
+  view.innerHTML = `
+    <div class="module-banner">
+      <div class="module-step-label">
+        <span class="module-color-dot" style="background:${color};box-shadow:0 0 8px ${color}60;"></span>
+        Step ${step} &middot; 5 Modules
+      </div>
+      <div class="module-title-serif">${esc(title)}</div>
+      <div class="module-progress-bar">${segmentsHTML}</div>
+    </div>
+
+    <div class="commute-grid">
+      ${commuteCard(toWork, 'To Work', toWorkUID)}
+      ${commuteCard(fromWork, 'From Work', fromWorkUID)}
+    </div>
+
+    ${readingHTML}
+
+    <div class="section-heading">Daily Exports</div>
+    ${DATA.exports.map((ex, i) => `
+      <div class="export-card">
+        <div class="gold-circle">${i + 1}</div>
+        <div class="export-content">
+          <div class="export-name">${esc(ex.name)}</div>
+          <div class="export-prompt">${esc(ex.prompt)}</div>
+          <div class="export-example">"${esc(ex.example)}"</div>
+        </div>
+      </div>`).join('')}
+
+    <div class="complete-step-wrapper">
+      <button class="btn btn-gold-pill" id="btn-complete" ${isAllDone ? 'disabled' : ''}>
+        ${btnLabel}
+      </button>
+    </div>
+  `;
+
+  // Wire up "Read Summary" button
+  const readBtn = view.querySelector('#btn-read-summary');
+  if (readBtn) {
+    readBtn.addEventListener('click', () => {
+      const bookId = readBtn.dataset.book;
+      const chNum = parseInt(readBtn.dataset.ch, 10);
+      switchToView('library');
+      setTimeout(() => openBookAndChapter(bookId, chNum), 50);
+    });
+  }
+
+  // Wire up complete button
+  const completeBtn = view.querySelector('#btn-complete');
+  if (completeBtn && !isAllDone) {
+    completeBtn.addEventListener('click', () => {
+      const p = loadProgress();
+      if (!p.completed_steps.includes(p.current_step)) {
+        p.completed_steps.push(p.current_step);
+      }
+      if (p.current_step < 5) {
+        p.current_step = p.current_step + 1;
+      }
+      saveProgress(p);
+      renderAll();
+    });
+  }
+}
+
+// ===========================================================
+// LIBRARY VIEW
+// ===========================================================
+
+function renderLibrary() {
+  const navInner = document.querySelector('#library-nav .library-nav-inner');
+  if (!navInner) return;
+
+  // Build left nav
+  let navHTML = `<div class="lib-nav-heading">Books</div>`;
   DATA.books.forEach(book => {
     const chaptersHTML = book.chapters.map(ch => {
       const modColor = ch.assigned_module ? moduleColor(ch.assigned_module) : null;
       const modBadge = modColor
-        ? `<span class="badge badge-module" style="background:${modColor}22;color:${modColor};border:1px solid ${modColor}44;">MODULE ${ch.assigned_module}</span>`
+        ? `<span class="lib-module-badge" style="background:${modColor}22;color:${modColor};">M${ch.assigned_module}</span>`
         : '';
-
-      const conceptsHTML = ch.key_concepts
-        .map(c => `<li>${esc(c)}</li>`)
-        .join('');
-
       return `
-        <div class="chapter-item" data-book="${esc(book.id)}" data-ch="${ch.number}">
-          <div class="chapter-header">
-            <div class="chapter-num">Ch ${ch.number}</div>
-            <div class="chapter-title-text">${esc(ch.title)}</div>
-            <div class="chapter-badges">${modBadge}</div>
-            <div class="chapter-chevron">${chevronSVG()}</div>
-          </div>
-          <div class="chapter-body">
-            <p class="chapter-summary">${esc(ch.summary)}</p>
-            <blockquote class="chapter-quote">"${esc(ch.key_quote)}"</blockquote>
-            <div class="section-heading" style="margin-top:14px;">KEY CONCEPTS</div>
-            <ul class="chapter-concepts">${conceptsHTML}</ul>
-            <div class="chapter-actions">
-              <a class="btn btn-outline" href="${esc(book.borrow_url)}"
-                target="_blank" rel="noopener noreferrer">
-                Borrow &amp; Read Full Book ↗
-              </a>
-            </div>
-          </div>
-        </div>`;
+        <button class="lib-chapter-btn" data-book="${esc(book.id)}" data-ch="${ch.number}">
+          <span class="lib-chapter-num">Ch ${ch.number}</span>
+          <span class="lib-chapter-title">${esc(ch.title)}</span>
+          ${modBadge}
+        </button>`;
     }).join('');
 
-    html += `
-      <div class="book-section" data-book-id="${esc(book.id)}">
-        <div class="book-header">
-          <div class="book-spine" style="background:${book.cover_color};"></div>
-          <div class="book-header-content">
-            <div class="book-title-main">${esc(book.title)}</div>
-            <div class="book-subtitle">${esc(book.subtitle)}</div>
-            <div class="book-authors">${esc(book.authors)}</div>
+    navHTML += `
+      <div class="lib-book-item" data-book-nav="${esc(book.id)}">
+        <div class="lib-book-header">
+          <div class="lib-book-spine" style="background:${book.cover_color};"></div>
+          <div class="lib-book-info">
+            <div class="lib-book-title">${esc(book.title)}</div>
+            <div class="lib-book-author">${esc(book.authors)}</div>
           </div>
-          <div class="book-chevron">${chevronSVG()}</div>
+          <div class="lib-book-chevron">${chevronSVG(16)}</div>
         </div>
-        <div class="chapter-list">${chaptersHTML}</div>
+        <div class="lib-chapter-list">${chaptersHTML}</div>
       </div>`;
   });
 
-  view.innerHTML = html;
+  navInner.innerHTML = navHTML;
 
-  // Wire up book toggles
-  view.querySelectorAll('.book-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const section = header.closest('.book-section');
-      section.classList.toggle('open');
+  // Build mobile TOC
+  const tocSelect = document.getElementById('library-toc-select');
+  if (tocSelect) {
+    let tocHTML = '<option value="">— Select a chapter —</option>';
+    DATA.books.forEach(book => {
+      book.chapters.forEach(ch => {
+        tocHTML += `<option value="${esc(book.id)}__${ch.number}">${esc(book.title)} — Ch ${ch.number}: ${esc(ch.title)}</option>`;
+      });
     });
-  });
+    tocSelect.innerHTML = tocHTML;
+    tocSelect.addEventListener('change', () => {
+      const val = tocSelect.value;
+      if (!val) return;
+      const [bookId, chNumStr] = val.split('__');
+      openBookAndChapter(bookId, parseInt(chNumStr, 10));
+    });
+  }
 
-  // Wire up chapter toggles
-  view.querySelectorAll('.chapter-header').forEach(header => {
+  // Wire up book headers
+  navInner.querySelectorAll('.lib-book-header').forEach(header => {
     header.addEventListener('click', () => {
-      const item = header.closest('.chapter-item');
+      const item = header.closest('.lib-book-item');
       item.classList.toggle('open');
     });
   });
 
+  // Wire up chapter buttons
+  navInner.querySelectorAll('.lib-chapter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const bookId = btn.dataset.book;
+      const chNum = parseInt(btn.dataset.ch, 10);
+      openBookAndChapter(bookId, chNum);
+    });
+  });
+
   // Auto-open current step's book + chapter
-  const chapterData = findChapterForStep(step);
+  const chapterData = findChapterForStep(progress.current_step);
   if (chapterData) {
-    openBookAndChapter(chapterData.book.id, chapterData.chapter.number);
+    const bookItem = navInner.querySelector(`[data-book-nav="${chapterData.book.id}"]`);
+    if (bookItem) bookItem.classList.add('open');
   }
 }
 
-function openBookAndChapter(bookId, chNum) {
-  const view = document.getElementById('view-read');
-  const section = view.querySelector(`.book-section[data-book-id="${bookId}"]`);
-  if (section) {
-    section.classList.add('open');
-    const chItem = section.querySelector(`.chapter-item[data-ch="${chNum}"]`);
-    if (chItem) {
-      chItem.classList.add('open');
-      setTimeout(() => {
-        chItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+async function openBookAndChapter(bookId, chNum) {
+  const book = DATA.books.find(b => b.id === bookId);
+  if (!book) return;
+  const chapter = book.chapters.find(c => c.number === chNum);
+  if (!chapter) return;
+
+  // Mark active in nav
+  document.querySelectorAll('.lib-chapter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.book === bookId && parseInt(btn.dataset.ch, 10) === chNum);
+  });
+
+  // Check if epub exists
+  const epubPath = await tryEpubReader(bookId);
+
+  const reader = document.getElementById('library-reader');
+  if (!reader) return;
+
+  const modColor = chapter.assigned_module ? moduleColor(chapter.assigned_module) : null;
+  const modBadge = modColor
+    ? `<span class="reader-module-badge" style="background:${modColor}22;color:${modColor};border:1px solid ${modColor}44;">Module ${chapter.assigned_module}: ${MODULE_TITLES[chapter.assigned_module - 1]}</span>`
+    : '';
+
+  const conceptsHTML = chapter.key_concepts
+    .map(c => `<li>${esc(c)}</li>`)
+    .join('');
+
+  let epubSection = '';
+  if (epubPath) {
+    epubSection = `
+      <div class="epub-reader-container" id="epub-reader-container">
+        <div class="reader-full-chapter-heading">In-Browser Reader</div>
+        <div id="epub-render" style="height:580px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;"></div>
+        <div class="epub-controls">
+          <button class="btn btn-outline-sm" id="epub-prev">&#8592; Prev</button>
+          <button class="btn btn-outline-sm" id="epub-next">Next &#8594;</button>
+        </div>
+      </div>`;
+  } else {
+    epubSection = `
+      <div class="reader-full-chapter-heading">Read the Full Chapter</div>
+      <div class="reader-borrow-actions">
+        <button class="btn btn-outline" id="btn-archive-embed" data-archive="${esc(book.archive_id)}" data-title="${esc(book.title)}">
+          Open on Archive.org
+        </button>
+        <a class="btn btn-outline-sm" href="https://archive.org/download/${esc(book.archive_id)}/${esc(book.archive_id)}.epub" target="_blank" rel="noopener noreferrer">
+          Download EPUB &#8599;
+        </a>
+      </div>
+      <p class="reader-borrow-note">Free to borrow with a free Archive.org account.</p>`;
+  }
+
+  reader.innerHTML = `
+    <div class="reader-chapter-num">Chapter ${chapter.number}</div>
+    <h2 class="reader-chapter-title">${esc(chapter.title)}</h2>
+    ${modBadge}
+    <p class="reader-summary">${esc(chapter.summary)}</p>
+    <blockquote class="reader-quote">"${esc(chapter.key_quote)}"</blockquote>
+    <div class="reader-concepts-heading">Key Concepts</div>
+    <ul class="reader-concepts">${conceptsHTML}</ul>
+    <hr class="reader-divider">
+    ${epubSection}
+  `;
+
+  // Init epub reader if available
+  if (epubPath) {
+    initEpubReader(epubPath, chapter.number);
+  }
+
+  // Wire up archive.org embed button
+  const archiveBtn = reader.querySelector('#btn-archive-embed');
+  if (archiveBtn) {
+    archiveBtn.addEventListener('click', () => {
+      openArchiveOverlay(archiveBtn.dataset.archive, archiveBtn.dataset.title);
+    });
+  }
+
+  // Scroll reader to top
+  reader.scrollTop = 0;
+}
+
+// epub.js integration
+async function tryEpubReader(bookId) {
+  const filenames = {
+    'difficult_conversations': 'difficult_conversations.epub',
+    'crucial_conversations': 'crucial_conversations.epub',
+    'relationship_cure': 'relationship_cure.epub'
+  };
+
+  const filename = filenames[bookId];
+  if (!filename) return null;
+
+  try {
+    const res = await fetch(`books/${filename}`, { method: 'HEAD' });
+    if (res.ok) {
+      return `books/${filename}`;
     }
-  }
+  } catch (e) { /* file not present */ }
+  return null;
+}
+
+function initEpubReader(epubPath, targetChapter) {
+  if (typeof ePub === 'undefined') return;
+
+  const container = document.getElementById('epub-reader-container');
+  if (!container) return;
+
+  const book = ePub(epubPath);
+  const rendition = book.renderTo('epub-render', {
+    width: '100%',
+    height: '100%',
+    spread: 'none'
+  });
+
+  book.ready.then(() => {
+    if (targetChapter) {
+      let found = false;
+      book.spine.each((item, i) => {
+        if (!found && i === targetChapter - 1) {
+          rendition.display(item.href);
+          found = true;
+        }
+      });
+      if (!found) rendition.display();
+    } else {
+      rendition.display();
+    }
+  });
+
+  const prevBtn = document.getElementById('epub-prev');
+  const nextBtn = document.getElementById('epub-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => rendition.prev());
+  if (nextBtn) nextBtn.addEventListener('click', () => rendition.next());
+}
+
+// Archive.org overlay
+function openArchiveOverlay(archiveId, title) {
+  const overlay = document.getElementById('archive-overlay');
+  const iframe = document.getElementById('archive-iframe');
+  const titleEl = document.getElementById('archive-modal-title');
+
+  if (!overlay || !iframe) return;
+  titleEl.textContent = title || 'Archive.org Reader';
+  iframe.src = `https://archive.org/embed/${archiveId}`;
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+}
+
+function closeArchiveOverlay() {
+  const overlay = document.getElementById('archive-overlay');
+  const iframe = document.getElementById('archive-iframe');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  if (iframe) iframe.src = '';
 }
 
 // ===========================================================
-// LISTEN VIEW
+// MEDIA VIEW
 // ===========================================================
 
-function renderListen() {
-  const view = document.getElementById('view-listen');
+function renderMedia() {
+  const view = document.getElementById('view-media');
   const step = progress.current_step;
 
-  const toWorkHTML = DATA.media.to_work.map(item => renderMediaCard(item, step, 'tw')).join('');
-  const fromWorkHTML = DATA.media.from_work.map(item => renderMediaCard(item, step, 'fw')).join('');
+  function renderEpisodeCard(item, queueKey, isCurrent) {
+    const color = moduleColor(item.module);
+    const uid = `embed-media-${queueKey}-m${item.module}`;
+    const tsLabel = item.timestamp ? ` &middot; starts ${formatTimestamp(item.timestamp)}` : '';
+
+    const featuredOpen = isCurrent
+      ? `<div style="margin-top:12px;">${renderYTEmbed(item, uid)}</div>`
+      : renderYTEmbed(item, uid);
+
+    const nowPlayingTag = isCurrent
+      ? `<span class="now-playing-tag">Now Playing</span>`
+      : '';
+
+    return `
+      <div class="media-card ${isCurrent ? 'featured' : ''}">
+        <div class="media-card-top">
+          <div class="media-card-top-left">
+            <div class="media-module-dot" style="background:${color};"></div>
+            <span class="media-show-label">${esc(item.show)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="badge badge-duration">${item.duration_mins} MIN${tsLabel}</span>
+            ${nowPlayingTag}
+          </div>
+        </div>
+        <div class="media-episode-title">${esc(item.title)}</div>
+        <div class="media-theme">${esc(item.theme)}</div>
+        <div class="media-card-actions">
+          ${item.youtube_id
+            ? `<button class="btn btn-play" data-toggle-embed="${uid}">&#9654; Play Here</button>
+               <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#8599; YouTube</a>`
+            : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#9654; Play</a>`
+          }
+        </div>
+        ${isCurrent
+          ? `<div class="yt-embed-container" id="${uid}" data-open="1" style="margin-top:12px;">
+              <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/${item.youtube_id}?start=${item.timestamp || 0}&rel=0&modestbranding=1"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen loading="lazy" title="${esc(item.title)}"></iframe>
+              </div>
+            </div>`
+          : renderYTEmbed(item, uid)
+        }
+      </div>`;
+  }
+
+  const toWorkHTML = DATA.media.to_work.map(item => renderEpisodeCard(item, 'tw', item.module === step)).join('');
+  const fromWorkHTML = DATA.media.from_work.map(item => renderEpisodeCard(item, 'fw', item.module === step)).join('');
 
   view.innerHTML = `
-    <div class="section-heading">TO WORK QUEUE</div>
+    <div class="media-queue-heading">To Work Queue</div>
     ${toWorkHTML}
-    <div class="section-heading">FROM WORK QUEUE</div>
+    <div class="media-queue-heading">From Work Queue</div>
     ${fromWorkHTML}
   `;
 }
 
-function renderMediaCard(item, currentStep, queueKey) {
-  const isCurrent = item.module === currentStep;
-  const color = moduleColor(item.module);
-  const uid = `embed-${queueKey}-m${item.module}`;
-  const tsLabel = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
-
-  const currentBadge = isCurrent
-    ? `<span class="badge badge-current">CURRENT</span>` : '';
-
-  const playRow = item.youtube_id
-    ? `<button class="btn btn-play" data-toggle-embed="${uid}">▶ Play Here</button>
-       <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗ YouTube</a>`
-    : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">▶ PLAY</a>`;
-
-  return `
-    <div class="media-card ${isCurrent ? 'current-module' : ''}"
-      style="${isCurrent ? `border-left-color:${color};` : ''}">
-      <div class="media-info">
-        <div class="media-show">${esc(item.show)} · Module ${item.module}</div>
-        <div class="media-title">${esc(item.title)}</div>
-        <div class="media-theme">${esc(item.theme)}</div>
-        <div class="media-row">
-          ${playRow}
-          <span class="badge badge-duration">${item.duration_mins} MIN${tsLabel}</span>
-          ${currentBadge}
-        </div>
-      </div>
-      ${renderYTEmbed(item, uid)}
-    </div>`;
-}
-
 // ===========================================================
-// WATCH VIEW
+// PRACTICE VIEW
 // ===========================================================
 
-function renderWatch() {
-  const view = document.getElementById('view-watch');
-  const step = progress.current_step;
+function renderPractice() {
+  const view = document.getElementById('view-practice');
 
-  // Find current module's to_work item with youtube_id
-  const currentVideo = DATA.media.to_work[step - 1];
-  const hasVideo = currentVideo && currentVideo.youtube_id;
-
-  let heroHTML = '';
-  if (hasVideo) {
-    const src = `https://www.youtube.com/embed/${currentVideo.youtube_id}?start=${currentVideo.timestamp}&rel=0`;
-    heroHTML = `
-      <div class="video-info">
-        <div class="video-title">${esc(currentVideo.title)}</div>
-        <div class="video-meta">${esc(currentVideo.show)} · ${esc(currentVideo.network)} · Module ${step}: ${esc(currentVideo.theme)}</div>
-      </div>
-      <div class="video-wrapper">
-        <iframe
-          src="${src}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          loading="lazy"
-          title="${esc(currentVideo.title)}">
-        </iframe>
-      </div>`;
-  } else {
-    heroHTML = `
-      <div class="no-video-card">
-        <div class="no-video-icon">🎙</div>
-        <div class="no-video-text">Today's commute audio is a podcast — open it in Listen to play it in your podcast app.</div>
-        <button class="btn btn-primary" id="btn-go-listen">Go to Listen ↗</button>
-      </div>`;
-  }
-
-  // All video segments (both queues, all have youtube_id now)
-  const toWorkVideos = DATA.media.to_work.filter(i => i.youtube_id);
-  const fromWorkVideos = DATA.media.from_work.filter(i => i.youtube_id);
-
-  function watchVideoCard(item, queueKey) {
-    const uid = `embed-watch-${queueKey}-m${item.module}`;
-    const tsLabel = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
-    return `
-      <div class="video-card">
-        <div class="video-card-info">
-          <div class="video-card-title">${esc(item.title)}</div>
-          <div class="video-card-ts">${esc(item.show)} · Module ${item.module}${tsLabel}</div>
-        </div>
-        <div class="video-card-actions">
-          <button class="btn btn-play" data-toggle-embed="${uid}">▶ Play</button>
-          <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗</a>
-        </div>
-        ${renderYTEmbed(item, uid)}
-      </div>`;
-  }
-
-  const toWorkVideoCards = toWorkVideos.map(i => watchVideoCard(i, 'tw')).join('');
-  const fromWorkVideoCards = fromWorkVideos.map(i => watchVideoCard(i, 'fw')).join('');
-
-  view.innerHTML = `
-    ${heroHTML}
-    <div class="section-heading">TO WORK — ALL MODULES</div>
-    ${toWorkVideoCards}
-    <div class="section-heading">FROM WORK — ALL MODULES</div>
-    ${fromWorkVideoCards}
-  `;
-
-  // Wire up "go to listen" button if present
-  const goListenBtn = view.querySelector('#btn-go-listen');
-  if (goListenBtn) {
-    goListenBtn.addEventListener('click', () => switchToView('listen'));
-  }
-}
-
-// ===========================================================
-// MORE VIEW
-// ===========================================================
-
-function renderMore() {
-  const view = document.getElementById('view-more');
-  const step = progress.current_step;
-
-  // --- Scripts ---
   const scriptsHTML = DATA.scripts.map(script => `
     <div class="script-card" data-script="${esc(script.id)}">
       <div class="script-header">
-        <div class="script-name">${esc(script.name)}</div>
+        <div class="script-header-left">
+          <div class="script-name">${esc(script.name)}</div>
+          <div class="script-trigger-label">${esc(script.trigger)}</div>
+        </div>
         <div class="script-chevron">${chevronSVG()}</div>
       </div>
       <div class="script-body">
-        <div class="script-trigger">
-          WHEN: <span>${esc(script.trigger)}</span>
-        </div>
-        <div class="script-text" data-script-text="${esc(script.id)}">"${esc(script.text)}"</div>
+        <div class="script-text">"${esc(script.text)}"</div>
         <div class="script-copy-row">
           <button class="btn btn-copy" data-copy="${esc(script.id)}">Copy</button>
+        </div>
+        <div class="script-when">
+          <strong>When to use</strong>
+          ${esc(script.trigger)}
         </div>
       </div>
     </div>`).join('');
 
-  // --- Module cards ---
-  const modulesHTML = MODULE_TITLES.map((title, i) => {
-    const s = i + 1;
-    const color = moduleColorForIndex(i);
-    const tw = DATA.media.to_work[i];
-    const fw = DATA.media.from_work[i];
-    const chData = findChapterForStep(s);
-
-    const detailRows = `
-      <div class="module-detail-row">
-        <div class="module-detail-icon">🚗</div>
-        <div>
-          <div class="module-detail-label">To Work</div>
-          <div class="module-detail-value">${tw ? esc(tw.title) : '—'}</div>
-        </div>
+  const exportsHTML = DATA.exports.map((ex, i) => `
+    <div class="practice-export-card">
+      <div class="gold-circle">${i + 1}</div>
+      <div class="practice-export-content">
+        <div class="practice-export-name">${esc(ex.name)}</div>
+        <div class="practice-export-prompt">${esc(ex.prompt)}</div>
+        <div class="practice-export-example">"${esc(ex.example)}"</div>
       </div>
-      <div class="module-detail-row">
-        <div class="module-detail-icon">🏠</div>
-        <div>
-          <div class="module-detail-label">From Work</div>
-          <div class="module-detail-value">${fw ? esc(fw.title) : '—'}</div>
-        </div>
-      </div>
-      <div class="module-detail-row">
-        <div class="module-detail-icon">📖</div>
-        <div>
-          <div class="module-detail-label">Reading</div>
-          <div class="module-detail-value">${chData
-            ? `${esc(chData.book.title)} — Ch ${chData.chapter.number}: ${esc(chData.chapter.title)}`
-            : '—'}</div>
-        </div>
-      </div>`;
-
-    return `
-      <div class="module-card" data-module="${s}">
-        <div class="module-card-header">
-          <div class="module-step-dot" style="background:${color};">${s}</div>
-          <div class="module-card-title">${esc(title)}</div>
-          <div class="module-card-chevron">${chevronSVG()}</div>
-        </div>
-        <div class="module-card-body">
-          ${detailRows}
-        </div>
-      </div>`;
-  }).join('');
+    </div>`).join('');
 
   view.innerHTML = `
-    <div class="section-heading">CONVERSATION SCRIPTS</div>
+    <div class="section-heading">Conversation Scripts</div>
     ${scriptsHTML}
 
-    <div class="section-heading">ALL MODULES</div>
-    ${modulesHTML}
-
-    <div class="reset-section">
-      <button class="btn btn-danger-ghost" id="btn-reset">Reset Progress</button>
-    </div>
+    <div class="section-heading">Daily Exports</div>
+    ${exportsHTML}
   `;
 
   // Wire up script accordions
@@ -608,17 +657,229 @@ function renderMore() {
       if (script && navigator.clipboard) {
         navigator.clipboard.writeText(script.text).then(() => {
           const orig = btn.textContent;
-          btn.textContent = 'Copied ✓';
+          btn.textContent = 'Copied';
           setTimeout(() => { btn.textContent = orig; }, 2000);
         }).catch(() => {});
       }
     });
   });
+}
+
+// ===========================================================
+// MAP VIEW
+// ===========================================================
+
+let searchIndex = null;
+
+function buildSearchIndex() {
+  const index = [];
+
+  DATA.books.forEach(book => {
+    book.chapters.forEach(ch => {
+      index.push({
+        type: 'chapter',
+        title: ch.title,
+        subtitle: `${book.title} — Chapter ${ch.number}`,
+        text: ch.title + ' ' + ch.summary + ' ' + ch.key_concepts.join(' '),
+        module: ch.assigned_module,
+        bookId: book.id,
+        chNum: ch.number
+      });
+    });
+  });
+
+  [...DATA.media.to_work, ...DATA.media.from_work].forEach(item => {
+    index.push({
+      type: 'media',
+      title: item.title,
+      subtitle: `${item.show} — Module ${item.module}`,
+      text: item.title + ' ' + item.theme + ' ' + item.show,
+      module: item.module
+    });
+  });
+
+  DATA.scripts.forEach(s => {
+    index.push({
+      type: 'script',
+      title: s.name,
+      subtitle: `Script — ${s.trigger}`,
+      text: s.name + ' ' + s.trigger + ' ' + s.text,
+      module: null
+    });
+  });
+
+  return index;
+}
+
+function runSearch(query, index) {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase();
+  return index.filter(item => item.text.toLowerCase().includes(q));
+}
+
+function renderMap() {
+  const view = document.getElementById('view-map');
+  const step = progress.current_step;
+
+  // All 5 module cards
+  const modulesHTML = MODULE_TITLES.map((title, i) => {
+    const s = i + 1;
+    const color = MODULE_COLORS[i];
+    const tw = DATA.media.to_work[i];
+    const fw = DATA.media.from_work[i];
+    const chData = findChapterForStep(s);
+
+    const twUid = `embed-map-tw-m${s}`;
+    const fwUid = `embed-map-fw-m${s}`;
+
+    function compactMediaRow(item, uid, label) {
+      if (!item) return '';
+      return `
+        <div class="map-resource-row">
+          <div class="map-resource-info">
+            <div class="map-resource-title">${esc(item.title)}</div>
+            <div class="map-resource-sub">${label} &middot; ${esc(item.show)} &middot; ${item.duration_mins} min</div>
+          </div>
+          ${item.youtube_id
+            ? `<button class="btn btn-play" style="padding:5px 10px;font-size:.72rem;" data-toggle-embed="${uid}">&#9654;</button>
+               <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="padding:5px 10px;">&#8599;</a>`
+            : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" style="padding:5px 10px;font-size:.72rem;">&#9654;</a>`
+          }
+        </div>
+        ${item.youtube_id ? renderYTEmbed(item, uid) : ''}`;
+    }
+
+    let readingRow = '';
+    if (chData) {
+      readingRow = `
+        <div class="map-resource-row">
+          <div class="map-resource-info">
+            <div class="map-resource-title">${esc(chData.book.title)} — Ch ${chData.chapter.number}</div>
+            <div class="map-resource-sub">Reading &middot; ${esc(chData.chapter.title)}</div>
+          </div>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:.72rem;" data-open-chapter="${esc(chData.book.id)}" data-ch="${chData.chapter.number}">Read</button>
+        </div>`;
+    }
+
+    return `
+      <div class="map-module-card" data-module="${s}">
+        <div class="map-module-header">
+          <div class="map-module-dot" style="background:${color};">${s}</div>
+          <div class="map-module-title">${esc(title)}</div>
+          <div class="map-module-chevron">${chevronSVG()}</div>
+        </div>
+        <div class="map-module-body">
+          <div class="map-module-concept">${esc(MODULE_CONCEPTS[i])}</div>
+          <div class="map-detail-label">To Work</div>
+          ${compactMediaRow(tw, twUid, 'To Work')}
+          <div class="map-detail-label">From Work</div>
+          ${compactMediaRow(fw, fwUid, 'From Work')}
+          <div class="map-detail-label">Reading</div>
+          ${readingRow}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Cross-reference index
+  const allItems = [];
+
+  DATA.media.to_work.forEach(item => allItems.push({
+    type: 'media', label: 'Media', title: item.title,
+    sub: `Module ${item.module} &middot; To Work`, module: item.module
+  }));
+  DATA.media.from_work.forEach(item => allItems.push({
+    type: 'media', label: 'Media', title: item.title,
+    sub: `Module ${item.module} &middot; From Work`, module: item.module
+  }));
+  DATA.books.forEach(book => {
+    book.chapters.forEach(ch => allItems.push({
+      type: 'chapter', label: 'Chapter', title: `${book.title} Ch ${ch.number}`,
+      sub: `${esc(ch.title)} &middot; Module ${ch.assigned_module}`, module: ch.assigned_module
+    }));
+  });
+  DATA.scripts.forEach(s => allItems.push({
+    type: 'script', label: 'Script', title: s.name,
+    sub: s.trigger, module: null
+  }));
+
+  const indexItemsHTML = allItems.map((item, idx) => {
+    const typeStyle = item.type === 'media'
+      ? 'background:rgba(68,136,204,.15);color:#4488cc;'
+      : item.type === 'chapter'
+        ? 'background:rgba(153,102,221,.15);color:#9966dd;'
+        : 'background:rgba(51,170,136,.15);color:#33aa88;';
+    return `
+      <div class="index-item" data-module-filter="${item.module || 0}">
+        <span class="index-type-badge" style="${typeStyle}">${item.label}</span>
+        <span class="index-item-title">${esc(item.title)}</span>
+        <span class="index-item-sub">${item.sub}</span>
+      </div>`;
+  }).join('');
+
+  view.innerHTML = `
+    <div class="map-search-wrapper">
+      <span class="map-search-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input type="search" class="map-search-input" id="map-search" placeholder="Search chapters, episodes, scripts..." autocomplete="off">
+    </div>
+
+    <div class="search-results" id="search-results"></div>
+
+    <div class="section-heading">All 5 Modules</div>
+    ${modulesHTML}
+
+    <div class="section-heading">Full Resource Index</div>
+    <div class="index-filter-row">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="1">Module 1</button>
+      <button class="filter-btn" data-filter="2">Module 2</button>
+      <button class="filter-btn" data-filter="3">Module 3</button>
+      <button class="filter-btn" data-filter="4">Module 4</button>
+      <button class="filter-btn" data-filter="5">Module 5</button>
+    </div>
+    <div class="index-grid">${indexItemsHTML}</div>
+
+    <div class="reset-section">
+      <button class="btn btn-danger-ghost" id="btn-reset">Reset Progress</button>
+    </div>
+  `;
 
   // Wire up module card accordions
-  view.querySelectorAll('.module-card').forEach(card => {
-    const header = card.querySelector('.module-card-header');
+  view.querySelectorAll('.map-module-card').forEach(card => {
+    const header = card.querySelector('.map-module-header');
     header.addEventListener('click', () => card.classList.toggle('open'));
+  });
+
+  // Wire up "Read" buttons in map
+  view.querySelectorAll('[data-open-chapter]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const bookId = btn.dataset.openChapter;
+      const chNum = parseInt(btn.dataset.ch, 10);
+      switchToView('library');
+      setTimeout(() => openBookAndChapter(bookId, chNum), 50);
+    });
+  });
+
+  // Wire up filter buttons
+  view.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      view.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      view.querySelectorAll('.index-item').forEach(item => {
+        const modVal = item.dataset.moduleFilter;
+        if (filter === 'all' || modVal === filter) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
   });
 
   // Wire up reset button
@@ -632,38 +893,125 @@ function renderMore() {
       }
     });
   }
+
+  // Build search index and wire up search
+  searchIndex = buildSearchIndex();
+  const searchInput = view.querySelector('#map-search');
+  const searchResults = view.querySelector('#search-results');
+
+  if (searchInput && searchResults) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim();
+      if (!q) {
+        searchResults.classList.remove('visible');
+        searchResults.innerHTML = '';
+        return;
+      }
+      const results = runSearch(q, searchIndex);
+      if (results.length === 0) {
+        searchResults.innerHTML = `<div class="search-empty">No results for "${esc(q)}"</div>`;
+      } else {
+        searchResults.innerHTML = results.map(r => {
+          const typeStyle = r.type === 'chapter'
+            ? 'search-type-chapter'
+            : r.type === 'media'
+              ? 'search-type-media'
+              : 'search-type-script';
+          return `
+            <div class="search-result-item"
+              data-type="${r.type}"
+              data-book="${r.bookId || ''}"
+              data-ch="${r.chNum || ''}">
+              <span class="search-result-type ${typeStyle}">${r.type}</span>
+              <div class="search-result-text">
+                <div class="search-result-title">${esc(r.title)}</div>
+                <div class="search-result-sub">${esc(r.subtitle)}</div>
+              </div>
+            </div>`;
+        }).join('');
+      }
+      searchResults.classList.add('visible');
+    });
+
+    // Handle clicking search results
+    searchResults.addEventListener('click', e => {
+      const item = e.target.closest('.search-result-item');
+      if (!item) return;
+      const type = item.dataset.type;
+      if (type === 'chapter' && item.dataset.book && item.dataset.ch) {
+        switchToView('library');
+        setTimeout(() => openBookAndChapter(item.dataset.book, parseInt(item.dataset.ch, 10)), 50);
+      } else if (type === 'media') {
+        switchToView('media');
+      } else if (type === 'script') {
+        switchToView('practice');
+      }
+      searchInput.value = '';
+      searchResults.classList.remove('visible');
+      searchResults.innerHTML = '';
+    });
+  }
 }
 
-// --- Init --------------------------------------------------
+// ===========================================================
+// GLOBAL EVENT WIRING
+// ===========================================================
+
+// Global embed toggle — handles all "Play Here" buttons anywhere in the app
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-toggle-embed]');
+  if (!btn) return;
+  const target = document.getElementById(btn.dataset.toggleEmbed);
+  if (!target) return;
+  const isOpen = target.dataset.open === '1';
+  target.style.display = isOpen ? 'none' : 'block';
+  target.dataset.open = isOpen ? '0' : '1';
+  if (!isOpen) {
+    btn.textContent = '▼ Collapse';
+  } else {
+    // Restore play button text based on context
+    btn.innerHTML = '&#9654; Play Here';
+  }
+});
+
+// Archive overlay close
+document.addEventListener('click', e => {
+  if (e.target.closest('#archive-close-btn')) {
+    closeArchiveOverlay();
+  }
+  if (e.target === document.getElementById('archive-overlay')) {
+    closeArchiveOverlay();
+  }
+});
+
+// Escape key for overlay
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeArchiveOverlay();
+});
+
+// ===========================================================
+// INIT
+// ===========================================================
 
 async function init() {
   try {
     const res = await fetch('content.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
   } catch (e) {
     document.body.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:center;height:100dvh;
-        font-family:sans-serif;color:#e8e8f2;background:#070710;padding:24px;text-align:center;">
+        font-family:sans-serif;color:#ede8d8;background:#07070f;padding:24px;text-align:center;">
         <div>
-          <div style="font-size:2rem;margin-bottom:12px;">⚠️</div>
-          <div style="font-size:1rem;color:#8888aa;">Failed to load content.json.<br>
-          Please ensure you are serving this app via a local server or HTTPS.</div>
+          <div style="font-size:2.5rem;margin-bottom:16px;color:#c9a227;">&#9888;</div>
+          <div style="font-size:1rem;color:#8a8475;line-height:1.7;">
+            Failed to load content.json.<br>
+            Serve this app via a local server or HTTPS.
+          </div>
         </div>
       </div>`;
     return;
   }
-
-  // Global embed toggle — handles all "▶ Play Here" buttons anywhere in the app
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('[data-toggle-embed]');
-    if (!btn) return;
-    const target = document.getElementById(btn.dataset.toggleEmbed);
-    if (!target) return;
-    const isOpen = target.dataset.open === '1';
-    target.style.display = isOpen ? 'none' : 'block';
-    target.dataset.open = isOpen ? '0' : '1';
-    btn.textContent = isOpen ? '▶ Play Here' : '▼ Collapse';
-  });
 
   initNav();
   renderAll();
