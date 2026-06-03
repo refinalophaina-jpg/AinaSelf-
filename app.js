@@ -247,19 +247,39 @@ function renderToday() {
   }
 }
 
+function renderYTEmbed(item, uid) {
+  if (!item.youtube_id) return '';
+  const src = `https://www.youtube.com/embed/${item.youtube_id}?start=${item.timestamp || 0}&rel=0&modestbranding=1`;
+  return `
+    <div class="yt-embed-container" id="${uid}" data-open="0" style="display:none;">
+      <div class="video-wrapper">
+        <iframe src="${src}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy" title="${esc(item.title)}"></iframe>
+      </div>
+    </div>`;
+}
+
 function renderCommuteCard(item, label) {
+  const uid = `embed-${label.replace(/\W+/g, '-')}-m${item.module}`;
   const durationLabel = `${item.duration_mins} MIN`;
+  const tsNote = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
+
+  const playRow = item.youtube_id
+    ? `<button class="btn btn-play" data-toggle-embed="${uid}">▶ Play Here</button>
+       <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗ YouTube</a>`
+    : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">▶ PLAY</a>`;
+
   return `
     <div class="card">
-      <div class="commute-label">${label} · ${durationLabel}</div>
+      <div class="commute-label">${label} · ${durationLabel}${tsNote}</div>
       <div class="commute-title">${esc(item.title)}</div>
       <div class="commute-show">${esc(item.show)} · ${esc(item.network)}</div>
       <div class="commute-row">
-        <a class="btn btn-play" href="${esc(item.url)}"
-          target="_blank" rel="noopener noreferrer">▶ PLAY</a>
-        <span class="badge badge-duration">${durationLabel}</span>
+        ${playRow}
         <span class="badge badge-platform">${esc(item.platform)}</span>
       </div>
+      ${renderYTEmbed(item, uid)}
     </div>`;
 }
 
@@ -370,8 +390,8 @@ function renderListen() {
   const view = document.getElementById('view-listen');
   const step = progress.current_step;
 
-  const toWorkHTML = DATA.media.to_work.map(item => renderMediaCard(item, step)).join('');
-  const fromWorkHTML = DATA.media.from_work.map(item => renderMediaCard(item, step)).join('');
+  const toWorkHTML = DATA.media.to_work.map(item => renderMediaCard(item, step, 'tw')).join('');
+  const fromWorkHTML = DATA.media.from_work.map(item => renderMediaCard(item, step, 'fw')).join('');
 
   view.innerHTML = `
     <div class="section-heading">TO WORK QUEUE</div>
@@ -381,33 +401,34 @@ function renderListen() {
   `;
 }
 
-function renderMediaCard(item, currentStep) {
+function renderMediaCard(item, currentStep, queueKey) {
   const isCurrent = item.module === currentStep;
-  const icon = platformIcon(item.platform);
   const color = moduleColor(item.module);
+  const uid = `embed-${queueKey}-m${item.module}`;
+  const tsLabel = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
 
   const currentBadge = isCurrent
     ? `<span class="badge badge-current">CURRENT</span>` : '';
 
-  const tsLabel = item.timestamp
-    ? ` · starts at ${formatTimestamp(item.timestamp)}` : '';
+  const playRow = item.youtube_id
+    ? `<button class="btn btn-play" data-toggle-embed="${uid}">▶ Play Here</button>
+       <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗ YouTube</a>`
+    : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">▶ PLAY</a>`;
 
   return `
     <div class="media-card ${isCurrent ? 'current-module' : ''}"
       style="${isCurrent ? `border-left-color:${color};` : ''}">
-      <div class="media-icon">${icon}</div>
       <div class="media-info">
-        <div class="media-show">${esc(item.show)} · ${esc(item.network)}</div>
+        <div class="media-show">${esc(item.show)} · Module ${item.module}</div>
         <div class="media-title">${esc(item.title)}</div>
         <div class="media-theme">${esc(item.theme)}</div>
         <div class="media-row">
-          <a class="btn btn-play" href="${esc(item.url)}"
-            target="_blank" rel="noopener noreferrer">▶ PLAY</a>
+          ${playRow}
           <span class="badge badge-duration">${item.duration_mins} MIN${tsLabel}</span>
-          <span class="badge badge-platform">${esc(item.platform)}</span>
           ${currentBadge}
         </div>
       </div>
+      ${renderYTEmbed(item, uid)}
     </div>`;
 }
 
@@ -449,32 +470,36 @@ function renderWatch() {
       </div>`;
   }
 
-  // All video segments (both queues with youtube_id)
-  const allVideos = [
-    ...DATA.media.to_work.map(i => ({ ...i, queue: 'To Work' })),
-    ...DATA.media.from_work.map(i => ({ ...i, queue: 'From Work' }))
-  ].filter(i => i.youtube_id);
+  // All video segments (both queues, all have youtube_id now)
+  const toWorkVideos = DATA.media.to_work.filter(i => i.youtube_id);
+  const fromWorkVideos = DATA.media.from_work.filter(i => i.youtube_id);
 
-  const allVideoCards = allVideos.map(item => {
-    const tsLabel = item.timestamp ? ` · ${formatTimestamp(item.timestamp)}` : '';
-    const ytUrl = item.timestamp
-      ? `https://www.youtube.com/watch?v=${item.youtube_id}&t=${item.timestamp}`
-      : `https://www.youtube.com/watch?v=${item.youtube_id}`;
+  function watchVideoCard(item, queueKey) {
+    const uid = `embed-watch-${queueKey}-m${item.module}`;
+    const tsLabel = item.timestamp ? ` · starts ${formatTimestamp(item.timestamp)}` : '';
     return `
       <div class="video-card">
-        <div class="media-info">
+        <div class="video-card-info">
           <div class="video-card-title">${esc(item.title)}</div>
-          <div class="video-card-ts">Module ${item.module} · ${esc(item.queue)}${tsLabel}</div>
+          <div class="video-card-ts">${esc(item.show)} · Module ${item.module}${tsLabel}</div>
         </div>
-        <a class="btn btn-play" href="${esc(ytUrl)}"
-          target="_blank" rel="noopener noreferrer">▶ PLAY</a>
+        <div class="video-card-actions">
+          <button class="btn btn-play" data-toggle-embed="${uid}">▶ Play</button>
+          <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">↗</a>
+        </div>
+        ${renderYTEmbed(item, uid)}
       </div>`;
-  }).join('');
+  }
+
+  const toWorkVideoCards = toWorkVideos.map(i => watchVideoCard(i, 'tw')).join('');
+  const fromWorkVideoCards = fromWorkVideos.map(i => watchVideoCard(i, 'fw')).join('');
 
   view.innerHTML = `
     ${heroHTML}
-    <div class="section-heading">ALL VIDEO SEGMENTS</div>
-    ${allVideoCards || '<p style="color:var(--text-muted);font-size:.85rem;">No video segments available.</p>'}
+    <div class="section-heading">TO WORK — ALL MODULES</div>
+    ${toWorkVideoCards}
+    <div class="section-heading">FROM WORK — ALL MODULES</div>
+    ${fromWorkVideoCards}
   `;
 
   // Wire up "go to listen" button if present
@@ -627,6 +652,18 @@ async function init() {
       </div>`;
     return;
   }
+
+  // Global embed toggle — handles all "▶ Play Here" buttons anywhere in the app
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-toggle-embed]');
+    if (!btn) return;
+    const target = document.getElementById(btn.dataset.toggleEmbed);
+    if (!target) return;
+    const isOpen = target.dataset.open === '1';
+    target.style.display = isOpen ? 'none' : 'block';
+    target.dataset.open = isOpen ? '0' : '1';
+    btn.textContent = isOpen ? '▶ Play Here' : '▼ Collapse';
+  });
 
   initNav();
   renderAll();

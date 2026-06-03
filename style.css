@@ -454,6 +454,20 @@ ul { list-style: none; }
 }
 .btn-play:hover { background: var(--accent-lt); }
 
+.btn-outline-sm {
+  background: transparent;
+  color: var(--text-sec);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  font-size: .78rem;
+  border-radius: var(--radius-sm);
+  min-height: 36px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-outline-sm:hover { color: var(--text); border-color: var(--border-lt); }
+
 .btn-danger-ghost {
   background: transparent;
   color: var(--text-muted);
@@ -967,6 +981,13 @@ ul { list-style: none; }
 }
 
 /* --- Video / Watch View ----------------------------------- */
+/* Inline embed containers (expand on tap) */
+.yt-embed-container {
+  margin-top: 12px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
 .video-wrapper {
   position: relative;
   width: 100%;
