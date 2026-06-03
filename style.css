@@ -5,45 +5,45 @@
 
 /* --- CSS Custom Properties --------------------------------- */
 :root {
-  /* Backgrounds */
-  --bg:           #07070f;
-  --surface:      #0c0c18;
-  --card:         #111120;
-  --card-raised:  #161628;
-  --card-hover:   #1a1a30;
+  /* Backgrounds — warm parchment light palette */
+  --bg:           #f2efe8;
+  --surface:      #ffffff;
+  --card:         #ffffff;
+  --card-raised:  #f8f6f1;
+  --card-hover:   #eeebe3;
 
-  /* Gold accent (primary brand color) */
-  --gold:         #c9a227;
-  --gold-lt:      #e8c547;
-  --gold-dk:      #9a7a18;
-  --gold-glow:    rgba(201, 162, 39, 0.12);
-  --gold-border:  rgba(201, 162, 39, 0.25);
+  /* Gold accent — darker for light-bg contrast */
+  --gold:         #9e7a16;
+  --gold-lt:      #c49820;
+  --gold-dk:      #7a5e10;
+  --gold-glow:    rgba(158, 122, 22, 0.08);
+  --gold-border:  rgba(158, 122, 22, 0.22);
 
   /* Teal secondary */
-  --teal:         #2a9688;
-  --teal-lt:      #38b09e;
-  --teal-glow:    rgba(42, 150, 136, 0.12);
+  --teal:         #1a7a6e;
+  --teal-lt:      #22998a;
+  --teal-glow:    rgba(26, 122, 110, 0.08);
 
   /* Borders */
-  --border:       #1e1e32;
-  --border-lt:    #2a2a42;
+  --border:       rgba(0, 0, 0, 0.1);
+  --border-lt:    rgba(0, 0, 0, 0.06);
 
   /* Text */
-  --text:         #ede8d8;
-  --text-sec:     #8a8475;
-  --text-muted:   #524e48;
+  --text:         #1c1a16;
+  --text-sec:     #3d3830;
+  --text-muted:   #7a7268;
 
-  /* Module accent colors */
-  --m1: #9966dd;
-  --m2: #4488cc;
-  --m3: #33aa88;
-  --m4: #cc8822;
-  --m5: #cc5577;
+  /* Module accent colors — muted for light bg readability */
+  --m1: #7040c0;
+  --m2: #2060b0;
+  --m3: #1a8068;
+  --m4: #b06010;
+  --m5: #c03060;
 
   /* Layout */
   --nav-h:        72px;
   --header-h:     60px;
-  --radius:       16px;
+  --radius:       14px;
   --radius-sm:    10px;
   --radius-xs:    6px;
 
@@ -52,6 +52,12 @@
   --serif: 'Georgia', 'Charter', 'Times New Roman', serif;
 
   --transition: 200ms cubic-bezier(.4, 0, .2, 1);
+
+  /* Shadows — essential for light theme depth */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,.06);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:     0 2px 8px rgba(0,0,0,.09), 0 1px 3px rgba(0,0,0,.05);
+  --shadow-lg:  0 4px 16px rgba(0,0,0,.1), 0 2px 6px rgba(0,0,0,.06);
 }
 
 /* --- Reset & Base ----------------------------------------- */
@@ -352,13 +358,13 @@ ul { list-style: none; }
 }
 
 .badge-module {
-  background: rgba(201,162,39,.12);
+  background: var(--gold-glow);
   color: var(--gold);
   border: 1px solid var(--gold-border);
 }
 
 .badge-current {
-  background: rgba(201,162,39,.18);
+  background: var(--gold-glow);
   color: var(--gold-lt);
   border: 1px solid var(--gold-border);
 }
@@ -1544,12 +1550,217 @@ ul { list-style: none; }
 }
 
 /* ============================================================
+   LIGHT THEME — CARD SHADOWS
+   ============================================================ */
+
+.module-banner,
+.commute-card,
+.reading-card,
+.export-card,
+.media-card,
+.script-card,
+.practice-export-card,
+.map-module-card,
+.progress-stats-card,
+.sync-section,
+.lib-book-item {
+  box-shadow: var(--shadow-sm);
+}
+
+.media-card.featured {
+  box-shadow: var(--shadow);
+}
+
+/* ============================================================
+   NOTES & HIGHLIGHTS & AUDIO — READER SECTIONS
+   ============================================================ */
+
+.reader-tool-section {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.reader-tool-heading {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Highlights */
+.btn-save-highlight {
+  background: var(--gold-glow);
+  border: 1px solid var(--gold-border);
+  color: var(--gold);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.btn-save-highlight:hover { background: var(--gold-border); }
+
+.highlight-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: var(--gold-glow);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: .83rem;
+  font-family: var(--serif);
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+.highlight-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: .7rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-left: auto;
+  line-height: 1;
+}
+.highlight-delete:hover { color: #c03060; }
+.highlights-empty {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Notes */
+.reader-notes-ta {
+  width: 100%;
+  background: var(--card-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  padding: 10px 14px;
+  font-size: .88rem;
+  font-family: var(--sans);
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 90px;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+.reader-notes-ta:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.reader-notes-ta::placeholder { color: var(--text-muted); }
+.notes-status {
+  font-size: .7rem;
+  color: var(--gold);
+  margin-top: 4px;
+  height: 16px;
+}
+
+/* Audio memos */
+.audio-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.btn-record {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-raised);
+  border: 1px solid var(--border);
+  color: var(--text-sec);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-record:hover { border-color: var(--gold); color: var(--gold); }
+.btn-record.recording {
+  background: rgba(192,48,96,.08);
+  border-color: rgba(192,48,96,.35);
+  color: #c03060;
+  animation: pulse-border 1.2s infinite;
+}
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(192,48,96,.35); }
+  50%       { border-color: rgba(192,48,96,.7); }
+}
+.record-timer {
+  font-size: .8rem;
+  font-weight: 700;
+  color: #c03060;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+}
+.audio-memo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--card-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  margin-bottom: 6px;
+}
+.audio-memo-label {
+  flex: 1;
+  font-size: .78rem;
+  color: var(--text-sec);
+  font-weight: 500;
+}
+.audio-memo-controls {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.audio-empty {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* PDF summary note */
+.pdf-summary-note {
+  font-size: .76rem;
+  color: var(--text-muted);
+  background: var(--card-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+/* Tesla size bumps */
+@media (min-width: 1400px) {
+  .btn-record { padding: 10px 20px; font-size: .9rem; }
+  .audio-memo-item { padding: 10px 16px; }
+  .reader-notes-ta { font-size: .95rem; min-height: 110px; }
+}
+
+/* ============================================================
    SCROLLBAR STYLING
    ============================================================ */
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-lt); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 /* ============================================================

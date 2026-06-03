@@ -98,6 +98,74 @@ function getStats() {
   };
 }
 
+// --- Notes & Highlights -----------------------------------
+
+function getNote(chKey) {
+  return localStorage.getItem(`note_${chKey}`) || '';
+}
+function saveNote(chKey, text) {
+  if (text.trim()) localStorage.setItem(`note_${chKey}`, text);
+  else localStorage.removeItem(`note_${chKey}`);
+}
+
+function getHighlights(chKey) {
+  try { return JSON.parse(localStorage.getItem(`hl_${chKey}`) || '[]'); }
+  catch (e) { return []; }
+}
+function addHighlight(chKey, text) {
+  const list = getHighlights(chKey);
+  list.push({ text, ts: Date.now() });
+  localStorage.setItem(`hl_${chKey}`, JSON.stringify(list));
+}
+function removeHighlight(chKey, ts) {
+  const list = getHighlights(chKey).filter(h => h.ts !== ts);
+  localStorage.setItem(`hl_${chKey}`, JSON.stringify(list));
+}
+
+// --- Audio Memos (IndexedDB) ------------------------------
+
+const AUDIO_DB = 'aina_audio';
+let _audioDb = null;
+
+function openAudioDb() {
+  if (_audioDb) return Promise.resolve(_audioDb);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(AUDIO_DB, 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('memos')) {
+        const store = db.createObjectStore('memos', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('chKey', 'chKey', { unique: false });
+      }
+    };
+    req.onsuccess = e => { _audioDb = e.target.result; resolve(_audioDb); };
+    req.onerror = () => reject(req.error);
+  });
+}
+function saveMemo(chKey, blob) {
+  return openAudioDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('memos', 'readwrite');
+    tx.objectStore('memos').add({ chKey, blob, label: new Date().toLocaleTimeString(), ts: Date.now() })
+      .onsuccess = e => resolve(e.target.result);
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+function getMemos(chKey) {
+  return openAudioDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('memos', 'readonly');
+    const req = tx.objectStore('memos').index('chKey').getAll(chKey);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  }));
+}
+function deleteMemo(id) {
+  return openAudioDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('memos', 'readwrite');
+    tx.objectStore('memos').delete(id).onsuccess = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
 function exportSyncCode() {
   return btoa(JSON.stringify({
     p: localStorage.getItem(PROGRESS_KEY) || '{}',
@@ -504,8 +572,18 @@ async function openBookAndChapter(bookId, chNum) {
 
   let epubSection = '';
   if (epubPath && epubPath.type === 'pdf') {
+    const pdfLabel = epubPath.isSummary
+      ? 'Condensed Summary PDF (~60 pages)'
+      : 'Full Book — In-Browser Reader';
+    const summaryNote = epubPath.isSummary
+      ? `<div class="pdf-summary-note">This is a condensed summary, not the full book. Use the Archive.org or purchase links below for the complete text.</div>`
+      : '';
+    const fullBookLink = (epubPath.isSummary && book.borrow_url)
+      ? `<a class="btn btn-outline-sm" href="${esc(book.borrow_url)}" target="_blank" rel="noopener noreferrer">Full Book on Archive.org &#8599;</a>`
+      : '';
     epubSection = `
-      <div class="reader-full-chapter-heading">Full Book — In-Browser Reader</div>
+      <div class="reader-full-chapter-heading">${pdfLabel}</div>
+      ${summaryNote}
       <div class="pdf-reader-container">
         <iframe
           src="${esc(epubPath.path)}"
@@ -518,6 +596,7 @@ async function openBookAndChapter(bookId, chNum) {
         <a class="btn btn-outline-sm" href="${esc(epubPath.path)}" target="_blank" rel="noopener noreferrer">
           Open in New Tab &#8599;
         </a>
+        ${fullBookLink}
       </div>`;
   } else if (epubPath && epubPath.type === 'epub') {
     epubSection = `
@@ -545,6 +624,16 @@ async function openBookAndChapter(bookId, chNum) {
 
   const chKey = `ch_${bookId}_${chNum}`;
   const chAlreadyDone = isItemDone(chKey);
+  const existingNote = getNote(chKey);
+  const existingHighlights = getHighlights(chKey);
+
+  const highlightsHTML = existingHighlights.length
+    ? existingHighlights.map(h => `
+        <div class="highlight-item" data-hl-ts="${h.ts}">
+          <span>${esc(h.text)}</span>
+          <button class="highlight-delete" data-hl-ts="${h.ts}" title="Remove">&#10005;</button>
+        </div>`).join('')
+    : `<div class="highlights-empty">Select text above and tap Save to capture a highlight.</div>`;
 
   reader.innerHTML = `
     <div class="reader-chapter-num">Chapter ${chapter.number}</div>
@@ -561,6 +650,30 @@ async function openBookAndChapter(bookId, chNum) {
     </div>
     <hr class="reader-divider">
     ${epubSection}
+
+    <div class="reader-tool-section">
+      <div class="reader-tool-heading">
+        Highlights
+        <button class="btn-save-highlight" id="btn-save-highlight">&#9999; Save Selection</button>
+      </div>
+      <div id="reader-highlights-list">${highlightsHTML}</div>
+    </div>
+
+    <div class="reader-tool-section">
+      <div class="reader-tool-heading">Notes</div>
+      <textarea class="reader-notes-ta" id="reader-notes-ta"
+        placeholder="Write your notes, reactions, or action items here...">${esc(existingNote)}</textarea>
+      <div class="notes-status" id="notes-status"></div>
+    </div>
+
+    <div class="reader-tool-section">
+      <div class="reader-tool-heading">Voice Memos</div>
+      <div class="audio-controls-row">
+        <button class="btn-record" id="btn-record">&#127908; Record</button>
+        <span class="record-timer" id="record-timer"></span>
+      </div>
+      <div class="audio-memo-list" id="audio-memo-list"><div class="audio-empty">Loading...</div></div>
+    </div>
   `;
 
   // Init epub reader if EPUB available
@@ -576,35 +689,190 @@ async function openBookAndChapter(bookId, chNum) {
     });
   }
 
+  // Highlights — save selection
+  const hlBtn = reader.querySelector('#btn-save-highlight');
+  const hlList = reader.querySelector('#reader-highlights-list');
+  if (hlBtn && hlList) {
+    hlBtn.addEventListener('click', () => {
+      const sel = window.getSelection();
+      const text = sel ? sel.toString().trim() : '';
+      if (!text || text.length < 4) {
+        hlBtn.textContent = '✗ Select text first';
+        setTimeout(() => { hlBtn.innerHTML = '&#9999; Save Selection'; }, 1500);
+        return;
+      }
+      addHighlight(chKey, text);
+      sel.removeAllRanges();
+      refreshHighlightsList(chKey, hlList);
+      hlBtn.textContent = '✓ Saved!';
+      setTimeout(() => { hlBtn.innerHTML = '&#9999; Save Selection'; }, 1500);
+    });
+
+    hlList.addEventListener('click', e => {
+      const delBtn = e.target.closest('.highlight-delete');
+      if (!delBtn) return;
+      const ts = parseInt(delBtn.dataset.hlTs, 10);
+      removeHighlight(chKey, ts);
+      refreshHighlightsList(chKey, hlList);
+    });
+  }
+
+  // Notes — auto-save
+  const notesTA = reader.querySelector('#reader-notes-ta');
+  const notesStatus = reader.querySelector('#notes-status');
+  if (notesTA) {
+    let noteTimer = null;
+    notesTA.addEventListener('input', () => {
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(() => {
+        saveNote(chKey, notesTA.value);
+        if (notesStatus) {
+          notesStatus.textContent = 'Saved';
+          setTimeout(() => { notesStatus.textContent = ''; }, 1500);
+        }
+      }, 600);
+    });
+  }
+
+  // Audio memos
+  initAudioMemos(chKey);
+
   // Scroll reader to top
   reader.scrollTop = 0;
 }
 
+function refreshHighlightsList(chKey, container) {
+  const list = getHighlights(chKey);
+  if (!list.length) {
+    container.innerHTML = `<div class="highlights-empty">Select text above and tap Save to capture a highlight.</div>`;
+    return;
+  }
+  container.innerHTML = list.map(h => `
+    <div class="highlight-item" data-hl-ts="${h.ts}">
+      <span>${esc(h.text)}</span>
+      <button class="highlight-delete" data-hl-ts="${h.ts}" title="Remove">&#10005;</button>
+    </div>`).join('');
+  container.querySelectorAll('.highlight-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      removeHighlight(chKey, parseInt(btn.dataset.hlTs, 10));
+      refreshHighlightsList(chKey, container);
+    });
+  });
+}
+
+async function initAudioMemos(chKey) {
+  const memoList = document.getElementById('audio-memo-list');
+  const recordBtn = document.getElementById('btn-record');
+  const timerEl = document.getElementById('record-timer');
+  if (!recordBtn || !memoList) return;
+
+  const refreshList = async () => {
+    const memos = await getMemos(chKey).catch(() => []);
+    if (!memos.length) {
+      memoList.innerHTML = '<div class="audio-empty">No voice memos yet.</div>';
+      return;
+    }
+    memoList.innerHTML = memos.map(m => `
+      <div class="audio-memo-item" data-memo-id="${m.id}">
+        <span class="audio-memo-label">&#127908; ${esc(m.label)}</span>
+        <div class="audio-memo-controls">
+          <button class="btn btn-outline-sm btn-play-memo" data-memo-id="${m.id}">&#9654; Play</button>
+          <button class="btn btn-danger-ghost btn-del-memo" data-memo-id="${m.id}" style="padding:4px 8px;font-size:.72rem;">&#10005;</button>
+        </div>
+      </div>`).join('');
+    memoList.querySelectorAll('.btn-play-memo').forEach(btn => {
+      const memo = memos.find(m => m.id === parseInt(btn.dataset.memoId, 10));
+      if (!memo) return;
+      btn.addEventListener('click', () => {
+        const url = URL.createObjectURL(memo.blob);
+        const audio = new Audio(url);
+        audio.play();
+        btn.innerHTML = '&#9654; Playing&hellip;';
+        audio.onended = () => { btn.innerHTML = '&#9654; Play'; URL.revokeObjectURL(url); };
+      });
+    });
+    memoList.querySelectorAll('.btn-del-memo').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this voice memo?')) return;
+        await deleteMemo(parseInt(btn.dataset.memoId, 10));
+        refreshList();
+      });
+    });
+  };
+
+  await refreshList();
+
+  let mediaRecorder = null;
+  let chunks = [];
+  let timerInterval = null;
+  let elapsed = 0;
+
+  recordBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      chunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        clearInterval(timerInterval);
+        if (timerEl) timerEl.textContent = '';
+        recordBtn.classList.remove('recording');
+        recordBtn.innerHTML = '&#127908; Record';
+        if (chunks.length) {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          await saveMemo(chKey, blob).catch(() => {});
+          refreshList();
+        }
+      };
+      mediaRecorder.start(250);
+      elapsed = 0;
+      recordBtn.classList.add('recording');
+      recordBtn.innerHTML = '&#9209; Stop';
+      if (timerEl) { timerEl.textContent = '0:00'; }
+      timerInterval = setInterval(() => {
+        elapsed++;
+        if (timerEl) {
+          const m = Math.floor(elapsed / 60);
+          timerEl.textContent = `${m}:${String(elapsed % 60).padStart(2, '0')}`;
+        }
+        if (elapsed >= 300) mediaRecorder.stop();
+      }, 1000);
+    } catch (err) {
+      recordBtn.textContent = '⚠ Mic blocked';
+      setTimeout(() => { recordBtn.innerHTML = '&#127908; Record'; }, 2500);
+    }
+  });
+}
+
 // epub.js integration
 async function tryEpubReader(bookId) {
-  const bases = {
-    'difficult_conversations': 'difficult_conversations',
-    'crucial_conversations': 'crucial_conversations',
-    'relationship_cure': 'relationship_cure',
-    'how_to_be_yourself': 'how_to_be_yourself',
-    'quiet': 'quiet',
-    'platonic': 'platonic',
-    'how_to_win_friends': 'how_to_win_friends',
-    'how_to_talk_to_anyone': 'how_to_talk_to_anyone'
+  // { file, isSummary } — isSummary=true means Bookey ~60-page condensed summary
+  const bookFiles = {
+    'difficult_conversations': { file: 'difficult_conversations', isSummary: true },
+    'crucial_conversations':   { file: 'crucial_conversations',   isSummary: true },
+    'relationship_cure':       { file: 'relationship_cure',       isSummary: true },
+    'how_to_be_yourself':      { file: 'how_to_be_yourself',      isSummary: true },
+    'quiet':                   { file: 'quiet',                   isSummary: true },
+    'platonic':                { file: 'platonic',                isSummary: true },
+    'how_to_win_friends':      { file: 'how_to_win_friends_full', isSummary: false },
+    'how_to_talk_to_anyone':   { file: 'how_to_talk_to_anyone',   isSummary: true }
   };
-  const base = bases[bookId];
-  if (!base) return null;
+  const entry = bookFiles[bookId];
+  if (!entry) return null;
 
-  // Prefer EPUB (epub.js)
   try {
-    const r = await fetch(`books/${base}.epub`, { method: 'HEAD' });
-    if (r.ok) return { path: `books/${base}.epub`, type: 'epub' };
+    const r = await fetch(`books/${entry.file}.epub`, { method: 'HEAD' });
+    if (r.ok) return { path: `books/${entry.file}.epub`, type: 'epub', isSummary: entry.isSummary };
   } catch (e) { /* not present */ }
 
-  // Fall back to PDF (native browser iframe)
   try {
-    const r = await fetch(`books/${base}.pdf`, { method: 'HEAD' });
-    if (r.ok) return { path: `books/${base}.pdf`, type: 'pdf' };
+    const r = await fetch(`books/${entry.file}.pdf`, { method: 'HEAD' });
+    if (r.ok) return { path: `books/${entry.file}.pdf`, type: 'pdf', isSummary: entry.isSummary };
   } catch (e) { /* not present */ }
 
   return null;
