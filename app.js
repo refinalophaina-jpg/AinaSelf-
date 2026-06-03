@@ -53,6 +53,69 @@ function saveProgress(p) {
 
 let progress = loadProgress();
 
+// --- Item Completion Tracking ----------------------------
+
+const ITEMS_KEY = 'aina_done';
+const NAME_KEY  = 'aina_name';
+
+function loadItems() {
+  try { return JSON.parse(localStorage.getItem(ITEMS_KEY) || '{}'); }
+  catch (e) { return {}; }
+}
+
+function saveItems(items) {
+  localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+}
+
+function toggleItem(key) {
+  const items = loadItems();
+  if (items[key]) { delete items[key]; } else { items[key] = Date.now(); }
+  saveItems(items);
+  return !!items[key];
+}
+
+function isItemDone(key) {
+  return !!loadItems()[key];
+}
+
+function getStats() {
+  const done = loadItems();
+  let chRead = 0, totalCh = 0, cmbWatched = 0, trackWatched = 0;
+  DATA.books.forEach(b => b.chapters.forEach(ch => {
+    totalCh++;
+    if (done[`ch_${b.id}_${ch.number}`]) chRead++;
+  }));
+  DATA.media.to_work.forEach(i => { if (done[`media_tw_m${i.module}`]) cmbWatched++; });
+  DATA.media.from_work.forEach(i => { if (done[`media_fw_m${i.module}`]) cmbWatched++; });
+  if (DATA.tracks) DATA.tracks.forEach(t => {
+    if (done[`track_tw_${t.id}`]) trackWatched++;
+    if (done[`track_fw_${t.id}`]) trackWatched++;
+  });
+  return {
+    chRead, totalCh,
+    cmbWatched, cmbTotal: 10,
+    trackWatched, trackTotal: DATA.tracks ? DATA.tracks.length * 2 : 0
+  };
+}
+
+function exportSyncCode() {
+  return btoa(JSON.stringify({
+    p: localStorage.getItem(PROGRESS_KEY) || '{}',
+    d: localStorage.getItem(ITEMS_KEY) || '{}',
+    n: localStorage.getItem(NAME_KEY) || ''
+  }));
+}
+
+function importSyncCode(code) {
+  try {
+    const obj = JSON.parse(atob(code.trim()));
+    if (obj.p) localStorage.setItem(PROGRESS_KEY, obj.p);
+    if (obj.d) localStorage.setItem(ITEMS_KEY, obj.d);
+    if (obj.n) localStorage.setItem(NAME_KEY, obj.n);
+    return true;
+  } catch (e) { return false; }
+}
+
 // --- Service Worker ----------------------------------------
 
 if ('serviceWorker' in navigator) {
@@ -305,11 +368,14 @@ function bookNavItem(book) {
     } else if (book._track_color) {
       badge = `<span class="lib-module-badge" style="background:${book._track_color}22;color:${book._track_color};">${book._track_title}</span>`;
     }
+    const chKey = `ch_${book.id}_${ch.number}`;
+    const chDone = isItemDone(chKey);
     return `
-      <button class="lib-chapter-btn" data-book="${esc(book.id)}" data-ch="${ch.number}">
+      <button class="lib-chapter-btn${chDone ? ' is-done' : ''}" data-book="${esc(book.id)}" data-ch="${ch.number}" data-item-key="${chKey}">
         <span class="lib-chapter-num">Ch ${ch.number}</span>
         <span class="lib-chapter-title">${esc(ch.title)}</span>
         ${badge}
+        ${chDone ? '<span class="item-done-check">&#10003;</span>' : ''}
       </button>`;
   }).join('');
   return `
@@ -477,6 +543,9 @@ async function openBookAndChapter(bookId, chNum) {
       <p class="reader-borrow-note">Free to borrow with a free Archive.org account.</p>`;
   }
 
+  const chKey = `ch_${bookId}_${chNum}`;
+  const chAlreadyDone = isItemDone(chKey);
+
   reader.innerHTML = `
     <div class="reader-chapter-num">Chapter ${chapter.number}</div>
     <h2 class="reader-chapter-title">${esc(chapter.title)}</h2>
@@ -485,6 +554,11 @@ async function openBookAndChapter(bookId, chNum) {
     <blockquote class="reader-quote">"${esc(chapter.key_quote)}"</blockquote>
     <div class="reader-concepts-heading">Key Concepts</div>
     <ul class="reader-concepts">${conceptsHTML}</ul>
+    <div class="reader-done-row">
+      <button class="btn-done-toggle${chAlreadyDone ? ' is-done' : ''}" id="btn-mark-read" data-toggle-done="${chKey}">
+        ${chAlreadyDone ? '&#10003; Marked as Read' : 'Mark as Read'}
+      </button>
+    </div>
     <hr class="reader-divider">
     ${epubSection}
   `;
@@ -604,10 +678,8 @@ function renderMedia() {
     const color = moduleColor(item.module);
     const uid = `embed-media-${queueKey}-m${item.module}`;
     const tsLabel = item.timestamp ? ` &middot; starts ${formatTimestamp(item.timestamp)}` : '';
-
-    const featuredOpen = isCurrent
-      ? `<div style="margin-top:12px;">${renderYTEmbed(item, uid)}</div>`
-      : renderYTEmbed(item, uid);
+    const itemKey = `media_${queueKey}_m${item.module}`;
+    const done = isItemDone(itemKey);
 
     const nowPlayingTag = isCurrent
       ? `<span class="now-playing-tag">Now Playing</span>`
@@ -633,6 +705,9 @@ function renderMedia() {
                <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#8599; YouTube</a>`
             : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#9654; Play</a>`
           }
+          <button class="btn-done-toggle${done ? ' is-done' : ''}" data-toggle-done="${itemKey}">
+            ${done ? '&#10003; Watched' : 'Mark Watched'}
+          </button>
         </div>
         ${isCurrent
           ? `<div class="yt-embed-container" id="${uid}" data-open="1" style="margin-top:12px;">
@@ -660,8 +735,9 @@ function renderMedia() {
       const twUID = `embed-track-tw-${track.id}`;
       const fwUID = `embed-track-fw-${track.id}`;
 
-      function trackCard(item, uid) {
+      function trackCard(item, uid, itemKey) {
         if (!item) return '';
+        const done = isItemDone(itemKey);
         return `
           <div class="media-card">
             <div class="media-card-top">
@@ -679,6 +755,9 @@ function renderMedia() {
                    <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#8599; YouTube</a>`
                 : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#9654; Play</a>`
               }
+              <button class="btn-done-toggle${done ? ' is-done' : ''}" data-toggle-done="${itemKey}">
+                ${done ? '&#10003; Watched' : 'Mark Watched'}
+              </button>
             </div>
             ${item.youtube_id ? renderYTEmbed(item, uid) : ''}
           </div>`;
@@ -688,8 +767,8 @@ function renderMedia() {
         <div class="track-section-label" style="color:${track.color};border-left:3px solid ${track.color};padding-left:10px;margin:20px 0 8px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;">
           ${esc(track.title)}
         </div>
-        ${trackCard(tw, twUID)}
-        ${trackCard(fw, fwUID)}`;
+        ${trackCard(tw, twUID, `track_tw_${track.id}`)}
+        ${trackCard(fw, fwUID, `track_fw_${track.id}`)}`;
     });
   }
 
@@ -937,6 +1016,9 @@ function renderMap() {
       </div>`;
   }).join('');
 
+  const stats = getStats();
+  const userName = localStorage.getItem(NAME_KEY) || '';
+
   view.innerHTML = `
     <div class="map-search-wrapper">
       <span class="map-search-icon">
@@ -949,6 +1031,24 @@ function renderMap() {
     </div>
 
     <div class="search-results" id="search-results"></div>
+
+    <div class="progress-stats-card">
+      <div class="stats-card-title">My Progress${userName ? ' — ' + esc(userName) : ''}</div>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-value">${stats.chRead}/${stats.totalCh}</div>
+          <div class="stat-label">Chapters Read</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${stats.cmbWatched}/${stats.cmbTotal}</div>
+          <div class="stat-label">CMB Episodes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${stats.trackWatched}/${stats.trackTotal}</div>
+          <div class="stat-label">Track Media</div>
+        </div>
+      </div>
+    </div>
 
     <div class="section-heading">All 5 Modules</div>
     ${modulesHTML}
@@ -964,8 +1064,26 @@ function renderMap() {
     </div>
     <div class="index-grid">${indexItemsHTML}</div>
 
+    <div class="sync-section">
+      <div class="sync-section-title">Profile &amp; Sync</div>
+      <div class="sync-name-row">
+        <input type="text" class="sync-name-input" id="sync-name-input"
+          placeholder="Your name (optional — shows above stats)"
+          value="${esc(userName)}">
+      </div>
+      <div class="sync-btn-row">
+        <button class="btn btn-outline-sm" id="btn-export-sync">Copy Sync Code</button>
+        <button class="btn btn-outline-sm" id="btn-import-sync">Import Code</button>
+      </div>
+      <div class="sync-import-area" id="sync-import-area">
+        <textarea class="sync-code-textarea" id="sync-code-input" placeholder="Paste your sync code here, then tap Apply..."></textarea>
+        <button class="btn btn-primary" id="btn-apply-sync">Apply &amp; Reload</button>
+      </div>
+      <p class="sync-note">Sync Code exports all your read/watched marks and module progress. Paste it on any device to restore.</p>
+    </div>
+
     <div class="reset-section">
-      <button class="btn btn-danger-ghost" id="btn-reset">Reset Progress</button>
+      <button class="btn btn-danger-ghost" id="btn-reset">Reset All Progress</button>
     </div>
   `;
 
@@ -1007,10 +1125,71 @@ function renderMap() {
   const resetBtn = view.querySelector('#btn-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      if (confirm('Reset all progress and return to Step 1?')) {
-        const fresh = { current_step: 1, completed_steps: [] };
-        saveProgress(fresh);
+      if (confirm('Reset all progress and return to Step 1? This also clears read/watched marks.')) {
+        saveProgress({ current_step: 1, completed_steps: [] });
+        saveItems({});
+        localStorage.removeItem(NAME_KEY);
         renderAll();
+      }
+    });
+  }
+
+  // Profile name — save on blur/enter
+  const nameInput = view.querySelector('#sync-name-input');
+  if (nameInput) {
+    const saveName = () => {
+      const v = nameInput.value.trim();
+      if (v) localStorage.setItem(NAME_KEY, v);
+      else localStorage.removeItem(NAME_KEY);
+    };
+    nameInput.addEventListener('blur', saveName);
+    nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { saveName(); nameInput.blur(); } });
+  }
+
+  // Export sync code
+  const exportBtn = view.querySelector('#btn-export-sync');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      if (nameInput) {
+        const v = nameInput.value.trim();
+        if (v) localStorage.setItem(NAME_KEY, v);
+      }
+      const code = exportSyncCode();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          const orig = exportBtn.textContent;
+          exportBtn.textContent = 'Copied!';
+          setTimeout(() => { exportBtn.textContent = orig; }, 2000);
+        }).catch(() => {
+          prompt('Copy this sync code:', code);
+        });
+      } else {
+        prompt('Copy this sync code:', code);
+      }
+    });
+  }
+
+  // Toggle import area
+  const importToggleBtn = view.querySelector('#btn-import-sync');
+  const importArea = view.querySelector('#sync-import-area');
+  if (importToggleBtn && importArea) {
+    importToggleBtn.addEventListener('click', () => {
+      importArea.classList.toggle('open');
+    });
+  }
+
+  // Apply imported sync code
+  const applyBtn = view.querySelector('#btn-apply-sync');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', () => {
+      const code = view.querySelector('#sync-code-input').value.trim();
+      if (!code) return;
+      if (importSyncCode(code)) {
+        renderAll();
+        switchToView('map');
+      } else {
+        applyBtn.textContent = 'Invalid code — try again';
+        setTimeout(() => { applyBtn.textContent = 'Apply & Reload'; }, 2500);
       }
     });
   }
@@ -1090,8 +1269,39 @@ document.addEventListener('click', e => {
   if (!isOpen) {
     btn.textContent = '▼ Collapse';
   } else {
-    // Restore play button text based on context
     btn.innerHTML = '&#9654; Play Here';
+  }
+});
+
+// Global done toggle — handles all "Mark Read/Watched" buttons
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-toggle-done]');
+  if (!btn) return;
+  const key = btn.dataset.toggleDone;
+  const nowDone = toggleItem(key);
+
+  if (btn.id === 'btn-mark-read') {
+    btn.textContent = nowDone ? '✓ Marked as Read' : 'Mark as Read';
+  } else {
+    btn.innerHTML = nowDone ? '&#10003; Watched' : 'Mark Watched';
+  }
+  btn.classList.toggle('is-done', nowDone);
+
+  // For chapter keys, also update the nav checkmark
+  if (key.startsWith('ch_')) {
+    const navBtn = document.querySelector(`.lib-chapter-btn[data-item-key="${key}"]`);
+    if (navBtn) {
+      navBtn.classList.toggle('is-done', nowDone);
+      let check = navBtn.querySelector('.item-done-check');
+      if (nowDone && !check) {
+        const span = document.createElement('span');
+        span.className = 'item-done-check';
+        span.textContent = '✓';
+        navBtn.appendChild(span);
+      } else if (!nowDone && check) {
+        check.remove();
+      }
+    }
   }
 });
 

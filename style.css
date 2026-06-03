@@ -1551,3 +1551,184 @@ ul { list-style: none; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-lt); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============================================================
+   ITEM COMPLETION — DONE STATES
+   ============================================================ */
+
+/* Chapter button done state */
+.lib-chapter-btn.is-done .lib-chapter-num {
+  color: var(--gold);
+}
+.item-done-check {
+  color: var(--gold);
+  font-size: .78rem;
+  font-weight: 700;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+
+/* Done toggle button — used in reader and media cards */
+.btn-done-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-done-toggle:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-done-toggle.is-done {
+  background: rgba(201,162,39,.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Reader done row */
+.reader-done-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+/* ============================================================
+   PROGRESS STATS CARD
+   ============================================================ */
+
+.progress-stats-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.stats-card-title {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 14px;
+}
+.stats-row {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1;
+}
+.stat-label {
+  font-size: .68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* ============================================================
+   PROFILE & SYNC SECTION
+   ============================================================ */
+
+.sync-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+.sync-section-title {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 14px;
+}
+.sync-name-row {
+  margin-bottom: 12px;
+}
+.sync-name-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  padding: 9px 14px;
+  font-size: .88rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+.sync-name-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.sync-btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.sync-import-area {
+  display: none;
+  margin-top: 10px;
+}
+.sync-import-area.open {
+  display: block;
+}
+.sync-code-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: .75rem;
+  font-family: 'Courier New', monospace;
+  min-height: 60px;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  transition: border-color var(--transition);
+}
+.sync-code-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.sync-note {
+  font-size: .72rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 10px 0 0;
+}
+
+/* Tesla-size touch targets for done buttons */
+@media (min-width: 1400px) {
+  .btn-done-toggle {
+    padding: 8px 18px;
+    font-size: .85rem;
+  }
+  .sync-name-input,
+  .sync-code-textarea {
+    font-size: .95rem;
+    padding: 11px 16px;
+  }
+}
