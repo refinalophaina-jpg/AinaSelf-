@@ -280,5 +280,452 @@
       "prompt": "Share one trivial or incomplete idea out loud. Narrate, don't solve.",
       "example": "I've been thinking about [X] — no answer yet, just wanted to say it out loud."
     }
+  ],
+  "tracks": [
+    {
+      "id": "social_anxiety",
+      "title": "Overcoming Social Anxiety",
+      "description": "From fear of negative evaluation to authentic presence",
+      "color": "#d64f6e",
+      "book": {
+        "id": "how_to_be_yourself",
+        "title": "How to Be Yourself",
+        "subtitle": "Quiet Your Inner Critic and Rise Above Social Anxiety",
+        "authors": "Ellen Hendriksen",
+        "year": 2018,
+        "file": "how_to_be_yourself.pdf",
+        "cover_color": "#d64f6e",
+        "chapters": [
+          {
+            "number": 1,
+            "title": "The Social Anxiety Signature",
+            "key_concepts": [
+              "Social anxiety = fear of negative evaluation, not shyness",
+              "The inner critic runs a real-time commentary of what could go wrong",
+              "Two components: physiological arousal + safety behaviors",
+              "Everyone has an Inner Critic; anxiety sufferers treat it as fact"
+            ],
+            "summary": "Hendriksen dismantles the myth that social anxiety is simply shyness. Social anxiety is defined by the fear of negative evaluation — a constant, pre-loaded assumption that others are judging you negatively. The inner critic operates like a sportscaster delivering a running commentary of everything that could go wrong, turning mundane social moments into perceived threats.",
+            "key_quote": "Social anxiety isn't about disliking people. It's about desperately wanting their approval while being convinced you can't get it."
+          },
+          {
+            "number": 2,
+            "title": "Safety Behaviors",
+            "key_concepts": [
+              "Safety behaviors reduce immediate distress but maintain anxiety long-term",
+              "Examples: over-preparing, speaking minimally, never disagreeing",
+              "They prevent disconfirmation — you never learn the feared outcome won't happen",
+              "Dropping safety behaviors is the first step toward genuine change"
+            ],
+            "summary": "The behaviors socially anxious people rely on to feel safe — over-preparing, staying quiet, deflecting questions, avoiding eye contact — are the very mechanisms that preserve the condition. Safety behaviors prevent you from ever learning that the catastrophized outcome won't occur. This chapter is the hinge on which the entire treatment model turns.",
+            "key_quote": "Safety behaviors are the deal you make with your anxiety. You keep the fear at bay, but you never call its bluff."
+          },
+          {
+            "number": 3,
+            "title": "The Exposure Prescription",
+            "key_concepts": [
+              "Systematic exposure: approach feared situations in graduated steps",
+              "Habituation: anxiety peaks, then naturally decreases if you stay in the situation",
+              "Drop safety behaviors during exposures to get full benefit",
+              "Inhibitory learning: new memory overwrites the threat association"
+            ],
+            "summary": "The clinical core of the book. Exposure therapy — approaching feared situations without safety behaviors — is the most evidence-based treatment for social anxiety. Anxiety peaks when you enter the situation, then decreases naturally if you stay. The key is staying without safety behaviors, so the brain can form a new inhibitory memory: this situation is not as dangerous as predicted.",
+            "key_quote": "The goal of exposure isn't to feel comfortable. It's to do the thing that feels uncomfortable, wait, and notice that you survived."
+          },
+          {
+            "number": 4,
+            "title": "Just Be Yourself — For Real",
+            "key_concepts": [
+              "Authenticity means sharing your actual thoughts, not performing a persona",
+              "The real you is not the anxious presentation — it is what you reveal once safe",
+              "Values-based action: move toward connection despite anxiety, not after it disappears",
+              "Genuine curiosity about others dissolves self-monitoring"
+            ],
+            "summary": "The final prescription is the simplest: redirect attention from self-monitoring to genuine curiosity about others. Authenticity is not a personality trait — it is a practice of sharing your actual thoughts and reactions in real time. Anxiety drops as mental resources spent on self-monitoring are redirected outward.",
+            "key_quote": "The cure for social anxiety isn't becoming a different person. It's finally letting the person you already are show up."
+          }
+        ]
+      },
+      "media": {
+        "to_work": {
+          "title": "Agoraphobia, Health Anxiety & Social Anxiety",
+          "show": "Therapy in a Nutshell",
+          "network": "Emma McAdam",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=f-IlwHERGxI",
+          "youtube_id": "f-IlwHERGxI",
+          "timestamp": 0,
+          "duration_mins": 20,
+          "theme": "Clinical overview of anxiety subtypes and what actually helps"
+        },
+        "from_work": {
+          "title": "How to Be Confident in Any Social Situation",
+          "show": "Charisma on Command",
+          "network": "Charlie Houpert",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=_PZKok5_KVA",
+          "youtube_id": "_PZKok5_KVA",
+          "timestamp": 0,
+          "duration_mins": 13,
+          "theme": "Applied confidence: behavioral techniques for social ease"
+        }
+      }
+    },
+    {
+      "id": "introversion",
+      "title": "Introversion to Active Voice",
+      "description": "From silent observer to confident contributor",
+      "color": "#7c4dff",
+      "book": {
+        "id": "quiet",
+        "title": "Quiet",
+        "subtitle": "The Power of Introverts in a World That Can't Stop Talking",
+        "authors": "Susan Cain",
+        "year": 2012,
+        "file": "quiet.pdf",
+        "cover_color": "#7c4dff",
+        "chapters": [
+          {
+            "number": 1,
+            "title": "The Extrovert Ideal",
+            "key_concepts": [
+              "Western culture prizes the extrovert ideal: gregarious, alpha, comfortable in spotlight",
+              "The Extrovert Ideal was largely constructed in the 20th century — before it, the ideal was character",
+              "Introverts are not broken extroverts; they have a different stimulation threshold",
+              "Shyness ≠ introversion: shyness is fear of judgment; introversion is preference for lower stimulation"
+            ],
+            "summary": "Cain's opening provocation: the modern West worships an Extrovert Ideal that would have been alien to earlier generations. The shift from a culture of character to a culture of personality created an implicit demand for outward performance. Introverts — who thrive with less stimulation, process deeply, and prefer focused work — are systematically misread as lacking confidence or ability.",
+            "key_quote": "Quiet people have the loudest minds."
+          },
+          {
+            "number": 2,
+            "title": "Soft Power",
+            "key_concepts": [
+              "Introvert strengths: preparation, concentration, single-tasking, listening depth",
+              "Many consequential leaders were introverts: Lincoln, Gandhi, Rosa Parks",
+              "Introvert leaders outperform extroverts when leading initiative-taking teams",
+              "Extroverts energize passive teams; introverts energize proactive ones"
+            ],
+            "summary": "The counterintuitive research: introvert leaders, by being better listeners and less dominant, outperform extroverts when leading teams that take initiative. The introvert's depth of preparation and ability to listen before acting creates an environment where team members' ideas are fully heard and utilized.",
+            "key_quote": "There's zero correlation between being the best talker and having the best ideas."
+          },
+          {
+            "number": 3,
+            "title": "The Rubber Band Theory",
+            "key_concepts": [
+              "Introverts can act outside their temperament — they have a rubber band that stretches",
+              "Free Trait Theory: we act out of character for projects and people we love",
+              "Restorative niches: planned recovery time before and after intense social activity",
+              "Stretch without snapping: identify which situations require free trait acting"
+            ],
+            "summary": "Cain's practical prescription. You are not trapped by introversion — you can stretch beyond it for causes and relationships that matter. But the rubber band must return to its natural shape. Restorative niches — planned, protected time that allows recovery from high-stimulation performance — are the infrastructure that makes sustained extroverted behavior possible without burnout.",
+            "key_quote": "Act the part, and then go restore. That is the strategy."
+          },
+          {
+            "number": 4,
+            "title": "How to Speak Up",
+            "key_concepts": [
+              "Introverts prepare talking points and questions in advance — this is a strength",
+              "One-on-one conversations are the introvert's natural medium; use them strategically",
+              "In group settings, speak early — early contributions establish presence before energy peaks",
+              "Written prep (notes before meetings) converts introvert depth into visible contribution"
+            ],
+            "summary": "Practical tactics for navigating extrovert-normed spaces: prepare questions in advance, speak up early in meetings to establish presence before the room fills with energy, use written channels as a legitimate contribution medium, and design social commitments to favor one-on-one formats where introverts naturally excel.",
+            "key_quote": "Speak early in a meeting, even just to ask a question. You establish yourself as a participant before the room fills with extrovert energy."
+          }
+        ]
+      },
+      "media": {
+        "to_work": {
+          "title": "The Power of Introverts",
+          "show": "TED",
+          "network": "Susan Cain",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=c0KYU2j0TM4",
+          "youtube_id": "c0KYU2j0TM4",
+          "timestamp": 0,
+          "duration_mins": 19,
+          "theme": "The case for introvert strengths in a world designed for extroverts"
+        },
+        "from_work": {
+          "title": "How to Never Be Boring in Conversation",
+          "show": "Charisma on Command",
+          "network": "Charlie Houpert",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=SwmJdp-8pg0",
+          "youtube_id": "SwmJdp-8pg0",
+          "timestamp": 0,
+          "duration_mins": 12,
+          "theme": "Techniques that make you magnetic without performing"
+        }
+      }
+    },
+    {
+      "id": "making_friends",
+      "title": "Making Friends as an Adult",
+      "description": "Science-backed strategies for building genuine adult friendships",
+      "color": "#00897b",
+      "book": {
+        "id": "platonic",
+        "title": "Platonic",
+        "subtitle": "How the Science of Attachment Can Help You Make—and Keep—Friends",
+        "authors": "Marisa G. Franco",
+        "year": 2022,
+        "file": "platonic.pdf",
+        "cover_color": "#00897b",
+        "chapters": [
+          {
+            "number": 1,
+            "title": "The Friendship Lie",
+            "key_concepts": [
+              "The myth: good friendships happen organically to people with the right personality",
+              "Reality: people who saw friendship as effortless grew lonelier over time",
+              "People who believed friendship requires effort grew less lonely (research finding)",
+              "Intentionality is the prerequisite for adult friendship, not a sign of desperation"
+            ],
+            "summary": "Franco dismantles the pervasive myth that adult friendships should just happen naturally. Research shows the opposite: people who believe friendship requires no effort grow increasingly lonely, while those who treat it as a skill to practice become progressively more connected. Friendship as intentional practice, not passive luck.",
+            "key_quote": "Friendship doesn't happen to you. It's something you make happen. That's not desperate — it's how it's always actually worked."
+          },
+          {
+            "number": 2,
+            "title": "Attachment in Friendship",
+            "key_concepts": [
+              "Attachment styles (secure, anxious, avoidant) operate in friendships, not just romance",
+              "Anxious style: cling, over-read signals, escalate too fast — drives people away",
+              "Avoidant style: stay surface-level, avoid vulnerability, keep people at distance",
+              "Earned security is possible through repeated safe interactions — style is not fixed"
+            ],
+            "summary": "Your attachment style — the blueprint formed in early relationships — operates invisibly in every friendship you try to build. Anxiously attached people escalate closeness too fast. Avoidantly attached people resist vulnerability and keep relationships shallow. Understanding your style is the diagnostic that explains why friendship attempts consistently produce specific, predictable outcomes.",
+            "key_quote": "Your attachment style is not a life sentence. It is a starting point — a map of the unconscious strategies you've been using, now made visible."
+          },
+          {
+            "number": 3,
+            "title": "The Vulnerability Loop",
+            "key_concepts": [
+              "Vulnerability is the mechanism, not a nice-to-have — it creates closeness by signaling trust",
+              "The loop: you self-disclose → they feel trusted → they reciprocate → closeness deepens",
+              "Calibrated disclosure: match depth to relationship stage",
+              "Asking questions signals care as powerfully as sharing personal information"
+            ],
+            "summary": "The vulnerability loop is the core engine of deepening friendship. When you disclose something personal, you signal trust. The other person, feeling trusted, tends to reciprocate at a similar depth. Franco's research shows the primary failure mode in adult friendship is staying too long at the surface — most people under-disclose relative to what would actually deepen connection.",
+            "key_quote": "Vulnerability is not a risk you take after trust is established. It is how trust gets established."
+          },
+          {
+            "number": 4,
+            "title": "Conflict and Repair",
+            "key_concepts": [
+              "Conflict in friendship is not a sign of failure — avoidance of conflict is",
+              "Rupture and repair cycles strengthen attachment in the long run",
+              "Naming tension directly is less damaging than silence or slow withdrawal",
+              "People who can repair conflict build the most durable friendships"
+            ],
+            "summary": "Most people avoid conflict in friendship because it feels like it will end the relationship. Franco shows the opposite: friendships that never encounter conflict and repair tend to be shallow. The rupture-repair cycle is the crucible in which deep trust is formed. The chapter provides specific language for raising interpersonal friction gently but directly.",
+            "key_quote": "A friendship that has never been through a repair is a friendship that has never been tested. And untested friendships don't hold under real weight."
+          }
+        ]
+      },
+      "media": {
+        "to_work": {
+          "title": "The Secret to Making New Friends as an Adult",
+          "show": "TED",
+          "network": "Marisa G. Franco",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=-k0p-DYYZKU",
+          "youtube_id": "-k0p-DYYZKU",
+          "timestamp": 0,
+          "duration_mins": 16,
+          "theme": "Why adult friendships are hard and the proven strategies to build them"
+        },
+        "from_work": {
+          "title": "Best Way to Ease Loneliness & Feel Happier",
+          "show": "Huberman Lab",
+          "network": "Dr. Laurie Santos & Andrew Huberman",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=aU89M0QD_4o",
+          "youtube_id": "aU89M0QD_4o",
+          "timestamp": 0,
+          "duration_mins": 15,
+          "theme": "Neuroscience of social connection and practical loneliness antidotes"
+        }
+      }
+    },
+    {
+      "id": "influence",
+      "title": "Influence & Charisma",
+      "description": "Carnegie principles and modern charisma techniques",
+      "color": "#d4800a",
+      "book": {
+        "id": "how_to_win_friends",
+        "title": "How to Win Friends and Influence People",
+        "subtitle": "The Classic Guide to Winning People to Your Way of Thinking",
+        "authors": "Dale Carnegie",
+        "year": 1936,
+        "file": "how_to_win_friends.pdf",
+        "cover_color": "#d4800a",
+        "chapters": [
+          {
+            "number": 1,
+            "title": "Don't Criticize, Condemn, or Complain",
+            "key_concepts": [
+              "Criticism triggers defensiveness and resentment — never changes behavior",
+              "People are primarily driven by pride, not logic",
+              "To change behavior: appeal to the noble motive, not the logical one",
+              "The deepest principle in human nature: the craving to be appreciated"
+            ],
+            "summary": "Carnegie opens with the most counterintuitive principle: criticism, however deserved, virtually never achieves the behavior change we want. It triggers the recipient's pride and defensiveness, who then spends mental energy justifying themselves rather than changing. The alternative is understanding what actually motivates people: their desire for importance and their craving to be appreciated.",
+            "key_quote": "Any fool can criticize, condemn, and complain — and most fools do. But it takes character and self-control to be understanding and forgiving."
+          },
+          {
+            "number": 2,
+            "title": "Give Honest, Sincere Appreciation",
+            "key_concepts": [
+              "Appreciation ≠ flattery: sincere observation of specific value vs. empty praise",
+              "Find something genuinely worth appreciating in every person you deal with",
+              "Name what you notice: specific, observable, true",
+              "The two hungers: food and appreciation — appreciation is never fully satisfied"
+            ],
+            "summary": "The second and most actionable principle: give honest, sincere appreciation. Carnegie distinguishes this sharply from flattery — which people instantly detect as manipulative. Genuine appreciation requires that you actually find and notice something specific and real about the person. The chapter trains a habit of attention: looking for what is genuinely worth acknowledging in every interaction.",
+            "key_quote": "The difference between appreciation and flattery? One is sincere and the other is not. One comes from the heart — the other from the teeth."
+          },
+          {
+            "number": 3,
+            "title": "Become Genuinely Interested in Others",
+            "key_concepts": [
+              "People are interested in themselves more than anything — meet them there",
+              "Genuine curiosity is more powerful than wit, brilliance, or charm",
+              "Ask questions you actually want to know the answers to",
+              "You can make more friends in 2 months by being interested than 2 years by being interesting"
+            ],
+            "summary": "The most practical chapter for the introverted, analytical person. Carnegie's research showed that genuine interest in others — not performance of charm — is what makes people feel warmly toward you. The formula is disarmingly simple: ask about what matters to them and actually listen. The real work is cultivating actual curiosity rather than performing the appearance of it.",
+            "key_quote": "You can make more friends in two months by becoming genuinely interested in other people than in two years by trying to get people interested in you."
+          },
+          {
+            "number": 4,
+            "title": "Win People to Your Way of Thinking",
+            "key_concepts": [
+              "You can never win an argument — even if you win the logic, you lose the relationship",
+              "Show people a face-saving path to the correct position, not a logic trap",
+              "Begin with agreement: find what you DO agree on before raising any difference",
+              "The Socratic method: get people to say yes early; they resist saying no later"
+            ],
+            "summary": "Carnegie's framework for influence without confrontation. Arguments are won by logic and lost by pride — the loser leaves with resentment and doubled conviction. The alternative: start from agreement, acknowledge what the other person is right about, and lead them toward your position through questions. They arrive at your conclusion feeling they reasoned there themselves.",
+            "key_quote": "In my opinion, the only way to get the best of an argument is to avoid it."
+          }
+        ]
+      },
+      "media": {
+        "to_work": {
+          "title": "How to Spark Interest in Every Conversation",
+          "show": "Charisma on Command",
+          "network": "Charlie Houpert",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=NzVrmGjsGWo",
+          "youtube_id": "NzVrmGjsGWo",
+          "timestamp": 0,
+          "duration_mins": 14,
+          "theme": "Practical techniques for becoming magnetically interesting in any social context"
+        },
+        "from_work": {
+          "title": "How to Avoid Being Socially Awkward",
+          "show": "Charisma on Command",
+          "network": "Charlie Houpert",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=kmDhit8BXz8",
+          "youtube_id": "kmDhit8BXz8",
+          "timestamp": 0,
+          "duration_mins": 12,
+          "theme": "The specific behaviors that create awkwardness and how to replace them"
+        }
+      }
+    },
+    {
+      "id": "small_talk",
+      "title": "Small Talk Mastery",
+      "description": "92 practical techniques for analytical and introverted people",
+      "color": "#0277bd",
+      "book": {
+        "id": "how_to_talk_to_anyone",
+        "title": "How to Talk to Anyone",
+        "subtitle": "92 Little Tricks for Big Success in Relationships",
+        "authors": "Leil Lowndes",
+        "year": 2003,
+        "file": "how_to_talk_to_anyone.pdf",
+        "cover_color": "#0277bd",
+        "chapters": [
+          {
+            "number": 1,
+            "title": "The Flooding Smile",
+            "key_concepts": [
+              "Delayed smile: pause before smiling so it reads as a genuine reaction to them specifically",
+              "First impressions are set in the first 4 seconds — facial expression dominates",
+              "Flooding smile: slow, full, warm smile that floods the face vs. reflexive social smile",
+              "Eye contact paired with the delayed smile creates powerful personal recognition"
+            ],
+            "summary": "Lowndes opens with the most immediate, lowest-effort technique. Most people flash a reflexive social smile at everyone — which reads as generic. The flooding smile is held back for one beat, then allowed to spread slowly and fully. The receiver reads it as a genuine, specific reaction to them as a person. Combined with sustained eye contact, it creates an immediate sense of personal warmth.",
+            "key_quote": "Don't flash an immediate smile when you greet someone. Wait a moment. Look at the person. Then let a warm smile flood your face. Your smile becomes their reward for being there."
+          },
+          {
+            "number": 2,
+            "title": "The Small Talk Ladder",
+            "key_concepts": [
+              "Small talk is not trivial — it is the warmup that makes deeper conversation possible",
+              "The ladder: comment on environment → open observation → personal question → shared story",
+              "Never use yes/no questions as openers — they create dead ends",
+              "'Tell me more' is the universal escalator to deeper conversation"
+            ],
+            "summary": "The chapter reframes small talk: not as meaningless pleasantry but as the necessary scaffolding that makes deeper conversation feel safe. Lowndes teaches a structured progression — comment on the shared environment, make an open-ended observation, ask a personal question, and listen for the detail that opens into something more meaningful.",
+            "key_quote": "Small talk is the kindling. You can't build a fire with big logs only. The small stuff is what gets it burning."
+          },
+          {
+            "number": 3,
+            "title": "Be a Word Detective",
+            "key_concepts": [
+              "People reveal what matters to them through word choice, not just topic",
+              "Pick up and reflect their exact vocabulary — it signals deep listening",
+              "The hot button: the word or phrase they keep returning to carries the most weight",
+              "Echo technique: repeat their last 3-4 words as a question — generates remarkable connection"
+            ],
+            "summary": "Advanced active listening for analytical people. The Word Detective technique trains you to hear not just what someone is saying but the specific language they use. People's word choices reveal emotional priorities. When you reflect their vocabulary back, they experience the rare sensation of being truly heard. The echo technique — repeating their last few words as a question — generates connection with minimal risk.",
+            "key_quote": "The words people choose are not accidental. They are invitations. Learn to hear them."
+          },
+          {
+            "number": 4,
+            "title": "Never the Naked Answer",
+            "key_concepts": [
+              "Never give a bare factual answer — always add a conversational hook",
+              "Instead of 'I'm an engineer,' say what you work on and why it's fascinating",
+              "The hook is a question, a paradox, or a surprising detail that invites them in",
+              "Both parties share conversational responsibility — add your hook, then invite their response"
+            ],
+            "summary": "The chapter targets the single most common conversation killer: the bare factual answer. When someone asks what you do, a one-word answer puts all responsibility back on them. Lowndes prescribes adding a hook — a surprising detail, a paradox, or a follow-up question — that hands them something easy to engage with. Especially useful for analytical people who default to precise, minimal answers.",
+            "key_quote": "Never give a naked answer to a question. Every answer is a door — leave it open. Give them something to walk through."
+          }
+        ]
+      },
+      "media": {
+        "to_work": {
+          "title": "Say It, See It: How to Connect Through Conversation",
+          "show": "Think Fast, Talk Smart",
+          "network": "Stanford GSB",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=ioTUUqkn0ac",
+          "youtube_id": "ioTUUqkn0ac",
+          "timestamp": 0,
+          "duration_mins": 22,
+          "theme": "How shared mental imagery powers real conversational connection"
+        },
+        "from_work": {
+          "title": "How to Start Small Talk: Asking Follow-up Questions",
+          "show": "Think Fast, Talk Smart",
+          "network": "Stanford GSB",
+          "platform": "YouTube",
+          "url": "https://www.youtube.com/watch?v=TSOt8v9fyl4",
+          "youtube_id": "TSOt8v9fyl4",
+          "timestamp": 0,
+          "duration_mins": 18,
+          "theme": "The practical mechanics of starting and sustaining small talk"
+        }
+      }
+    }
   ]
 }

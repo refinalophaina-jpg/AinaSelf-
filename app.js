@@ -295,39 +295,51 @@ function renderHome() {
 // LIBRARY VIEW
 // ===========================================================
 
+function bookNavItem(book) {
+  const spineColor = book.cover_color || book._track_color || '#666';
+  const chaptersHTML = book.chapters.map(ch => {
+    let badge = '';
+    if (ch.assigned_module) {
+      const mc = moduleColor(ch.assigned_module);
+      badge = `<span class="lib-module-badge" style="background:${mc}22;color:${mc};">M${ch.assigned_module}</span>`;
+    } else if (book._track_color) {
+      badge = `<span class="lib-module-badge" style="background:${book._track_color}22;color:${book._track_color};">${book._track_title}</span>`;
+    }
+    return `
+      <button class="lib-chapter-btn" data-book="${esc(book.id)}" data-ch="${ch.number}">
+        <span class="lib-chapter-num">Ch ${ch.number}</span>
+        <span class="lib-chapter-title">${esc(ch.title)}</span>
+        ${badge}
+      </button>`;
+  }).join('');
+  return `
+    <div class="lib-book-item" data-book-nav="${esc(book.id)}">
+      <div class="lib-book-header">
+        <div class="lib-book-spine" style="background:${spineColor};"></div>
+        <div class="lib-book-info">
+          <div class="lib-book-title">${esc(book.title)}</div>
+          <div class="lib-book-author">${esc(book.authors)}</div>
+        </div>
+        <div class="lib-book-chevron">${chevronSVG(16)}</div>
+      </div>
+      <div class="lib-chapter-list">${chaptersHTML}</div>
+    </div>`;
+}
+
 function renderLibrary() {
   const navInner = document.querySelector('#library-nav .library-nav-inner');
   if (!navInner) return;
 
-  // Build left nav
-  let navHTML = `<div class="lib-nav-heading">Books</div>`;
-  DATA.books.forEach(book => {
-    const chaptersHTML = book.chapters.map(ch => {
-      const modColor = ch.assigned_module ? moduleColor(ch.assigned_module) : null;
-      const modBadge = modColor
-        ? `<span class="lib-module-badge" style="background:${modColor}22;color:${modColor};">M${ch.assigned_module}</span>`
-        : '';
-      return `
-        <button class="lib-chapter-btn" data-book="${esc(book.id)}" data-ch="${ch.number}">
-          <span class="lib-chapter-num">Ch ${ch.number}</span>
-          <span class="lib-chapter-title">${esc(ch.title)}</span>
-          ${modBadge}
-        </button>`;
-    }).join('');
+  const cmbBooks = DATA.books.filter(b => !b._track);
+  const trackBooks = DATA.books.filter(b => !!b._track);
 
-    navHTML += `
-      <div class="lib-book-item" data-book-nav="${esc(book.id)}">
-        <div class="lib-book-header">
-          <div class="lib-book-spine" style="background:${book.cover_color};"></div>
-          <div class="lib-book-info">
-            <div class="lib-book-title">${esc(book.title)}</div>
-            <div class="lib-book-author">${esc(book.authors)}</div>
-          </div>
-          <div class="lib-book-chevron">${chevronSVG(16)}</div>
-        </div>
-        <div class="lib-chapter-list">${chaptersHTML}</div>
-      </div>`;
-  });
+  let navHTML = `<div class="lib-nav-heading">Communication Mastery</div>`;
+  cmbBooks.forEach(book => { navHTML += bookNavItem(book); });
+
+  if (trackBooks.length) {
+    navHTML += `<div class="lib-nav-heading" style="margin-top:20px;">Topic Tracks</div>`;
+    trackBooks.forEach(book => { navHTML += bookNavItem(book); });
+  }
 
   navInner.innerHTML = navHTML;
 
@@ -335,11 +347,32 @@ function renderLibrary() {
   const tocSelect = document.getElementById('library-toc-select');
   if (tocSelect) {
     let tocHTML = '<option value="">— Select a chapter —</option>';
-    DATA.books.forEach(book => {
-      book.chapters.forEach(ch => {
-        tocHTML += `<option value="${esc(book.id)}__${ch.number}">${esc(book.title)} — Ch ${ch.number}: ${esc(ch.title)}</option>`;
+    if (cmbBooks.length) {
+      tocHTML += `<optgroup label="Communication Mastery">`;
+      cmbBooks.forEach(book => {
+        book.chapters.forEach(ch => {
+          tocHTML += `<option value="${esc(book.id)}__${ch.number}">${esc(book.title)} — Ch ${ch.number}: ${esc(ch.title)}</option>`;
+        });
       });
-    });
+      tocHTML += `</optgroup>`;
+    }
+    if (trackBooks.length) {
+      const byTrack = {};
+      trackBooks.forEach(book => {
+        const grp = book._track_title || 'Topic Tracks';
+        if (!byTrack[grp]) byTrack[grp] = [];
+        byTrack[grp].push(book);
+      });
+      Object.entries(byTrack).forEach(([grpName, books]) => {
+        tocHTML += `<optgroup label="${esc(grpName)}">`;
+        books.forEach(book => {
+          book.chapters.forEach(ch => {
+            tocHTML += `<option value="${esc(book.id)}__${ch.number}">${esc(book.title)} — Ch ${ch.number}: ${esc(ch.title)}</option>`;
+          });
+        });
+        tocHTML += `</optgroup>`;
+      });
+    }
     tocSelect.innerHTML = tocHTML;
     tocSelect.addEventListener('change', () => {
       const val = tocSelect.value;
@@ -391,10 +424,13 @@ async function openBookAndChapter(bookId, chNum) {
   const reader = document.getElementById('library-reader');
   if (!reader) return;
 
-  const modColor = chapter.assigned_module ? moduleColor(chapter.assigned_module) : null;
-  const modBadge = modColor
-    ? `<span class="reader-module-badge" style="background:${modColor}22;color:${modColor};border:1px solid ${modColor}44;">Module ${chapter.assigned_module}: ${MODULE_TITLES[chapter.assigned_module - 1]}</span>`
-    : '';
+  let modBadge = '';
+  if (chapter.assigned_module) {
+    const modColor = moduleColor(chapter.assigned_module);
+    modBadge = `<span class="reader-module-badge" style="background:${modColor}22;color:${modColor};border:1px solid ${modColor}44;">Module ${chapter.assigned_module}: ${MODULE_TITLES[chapter.assigned_module - 1]}</span>`;
+  } else if (book._track_color) {
+    modBadge = `<span class="reader-module-badge" style="background:${book._track_color}22;color:${book._track_color};border:1px solid ${book._track_color}44;">${esc(book._track_title)}</span>`;
+  }
 
   const conceptsHTML = chapter.key_concepts
     .map(c => `<li>${esc(c)}</li>`)
@@ -475,7 +511,12 @@ async function tryEpubReader(bookId) {
   const bases = {
     'difficult_conversations': 'difficult_conversations',
     'crucial_conversations': 'crucial_conversations',
-    'relationship_cure': 'relationship_cure'
+    'relationship_cure': 'relationship_cure',
+    'how_to_be_yourself': 'how_to_be_yourself',
+    'quiet': 'quiet',
+    'platonic': 'platonic',
+    'how_to_win_friends': 'how_to_win_friends',
+    'how_to_talk_to_anyone': 'how_to_talk_to_anyone'
   };
   const base = bases[bookId];
   if (!base) return null;
@@ -609,11 +650,55 @@ function renderMedia() {
   const toWorkHTML = DATA.media.to_work.map(item => renderEpisodeCard(item, 'tw', item.module === step)).join('');
   const fromWorkHTML = DATA.media.from_work.map(item => renderEpisodeCard(item, 'fw', item.module === step)).join('');
 
+  let tracksHTML = '';
+  if (DATA.tracks && DATA.tracks.length) {
+    tracksHTML = `<div class="media-queue-heading" style="margin-top:32px;">Topic Tracks</div>`;
+    DATA.tracks.forEach(track => {
+      if (!track.media) return;
+      const tw = track.media.to_work;
+      const fw = track.media.from_work;
+      const twUID = `embed-track-tw-${track.id}`;
+      const fwUID = `embed-track-fw-${track.id}`;
+
+      function trackCard(item, uid) {
+        if (!item) return '';
+        return `
+          <div class="media-card">
+            <div class="media-card-top">
+              <div class="media-card-top-left">
+                <div class="media-module-dot" style="background:${track.color};"></div>
+                <span class="media-show-label">${esc(item.show)}</span>
+              </div>
+              <span class="badge badge-duration">${item.duration_mins} MIN</span>
+            </div>
+            <div class="media-episode-title">${esc(item.title)}</div>
+            <div class="media-theme">${esc(item.theme)}</div>
+            <div class="media-card-actions">
+              ${item.youtube_id
+                ? `<button class="btn btn-play" data-toggle-embed="${uid}">&#9654; Play Here</button>
+                   <a class="btn btn-outline-sm" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#8599; YouTube</a>`
+                : `<a class="btn btn-play" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">&#9654; Play</a>`
+              }
+            </div>
+            ${item.youtube_id ? renderYTEmbed(item, uid) : ''}
+          </div>`;
+      }
+
+      tracksHTML += `
+        <div class="track-section-label" style="color:${track.color};border-left:3px solid ${track.color};padding-left:10px;margin:20px 0 8px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;">
+          ${esc(track.title)}
+        </div>
+        ${trackCard(tw, twUID)}
+        ${trackCard(fw, fwUID)}`;
+    });
+  }
+
   view.innerHTML = `
     <div class="media-queue-heading">To Work Queue</div>
     ${toWorkHTML}
     <div class="media-queue-heading">From Work Queue</div>
     ${fromWorkHTML}
+    ${tracksHTML}
   `;
 }
 
@@ -728,6 +813,21 @@ function buildSearchIndex() {
       module: null
     });
   });
+
+  if (DATA.tracks) {
+    DATA.tracks.forEach(track => {
+      if (!track.media) return;
+      [track.media.to_work, track.media.from_work].filter(Boolean).forEach(item => {
+        index.push({
+          type: 'media',
+          title: item.title,
+          subtitle: `${item.show} — ${track.title}`,
+          text: item.title + ' ' + (item.theme || '') + ' ' + item.show + ' ' + track.title,
+          module: null
+        });
+      });
+    });
+  }
 
   return index;
 }
@@ -1019,6 +1119,21 @@ async function init() {
     const res = await fetch('content.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
+
+    // Flatten track books into DATA.books so Library/reader/search work uniformly
+    if (DATA.tracks) {
+      DATA.tracks.forEach(track => {
+        if (!track.book) return;
+        if (!DATA.books.find(b => b.id === track.book.id)) {
+          DATA.books.push({
+            ...track.book,
+            _track: track.id,
+            _track_title: track.title,
+            _track_color: track.color
+          });
+        }
+      });
+    }
   } catch (e) {
     document.body.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:center;height:100dvh;

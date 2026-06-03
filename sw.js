@@ -1,4 +1,4 @@
-const CACHE = 'aina-dara-v1';
+const CACHE = 'aina-dara-v2';
 const ASSETS = [
   '/',
   '/index.html',
