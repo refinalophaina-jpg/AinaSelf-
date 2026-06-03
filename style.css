@@ -949,6 +949,25 @@ ul { list-style: none; }
   margin-top: 12px;
 }
 
+.pdf-reader-container {
+  margin-top: 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border-lt);
+  background: #111;
+}
+
+.pdf-iframe {
+  display: block;
+  width: 100%;
+  height: 680px;
+  border: none;
+}
+
+@media (min-width: 1400px) {
+  .pdf-iframe { height: 820px; }
+}
+
 /* ============================================================
    MEDIA VIEW
    ============================================================ */

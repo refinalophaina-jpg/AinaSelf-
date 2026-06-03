@@ -401,7 +401,23 @@ async function openBookAndChapter(bookId, chNum) {
     .join('');
 
   let epubSection = '';
-  if (epubPath) {
+  if (epubPath && epubPath.type === 'pdf') {
+    epubSection = `
+      <div class="reader-full-chapter-heading">Full Book — In-Browser Reader</div>
+      <div class="pdf-reader-container">
+        <iframe
+          src="${esc(epubPath.path)}"
+          class="pdf-iframe"
+          title="${esc(book.title)}"
+          allow="fullscreen">
+        </iframe>
+      </div>
+      <div class="reader-borrow-actions" style="margin-top:10px;">
+        <a class="btn btn-outline-sm" href="${esc(epubPath.path)}" target="_blank" rel="noopener noreferrer">
+          Open in New Tab &#8599;
+        </a>
+      </div>`;
+  } else if (epubPath && epubPath.type === 'epub') {
     epubSection = `
       <div class="epub-reader-container" id="epub-reader-container">
         <div class="reader-full-chapter-heading">In-Browser Reader</div>
@@ -437,9 +453,9 @@ async function openBookAndChapter(bookId, chNum) {
     ${epubSection}
   `;
 
-  // Init epub reader if available
-  if (epubPath) {
-    initEpubReader(epubPath, chapter.number);
+  // Init epub reader if EPUB available
+  if (epubPath && epubPath.type === 'epub') {
+    initEpubReader(epubPath.path, chapter.number);
   }
 
   // Wire up archive.org embed button
@@ -456,21 +472,26 @@ async function openBookAndChapter(bookId, chNum) {
 
 // epub.js integration
 async function tryEpubReader(bookId) {
-  const filenames = {
-    'difficult_conversations': 'difficult_conversations.epub',
-    'crucial_conversations': 'crucial_conversations.epub',
-    'relationship_cure': 'relationship_cure.epub'
+  const bases = {
+    'difficult_conversations': 'difficult_conversations',
+    'crucial_conversations': 'crucial_conversations',
+    'relationship_cure': 'relationship_cure'
   };
+  const base = bases[bookId];
+  if (!base) return null;
 
-  const filename = filenames[bookId];
-  if (!filename) return null;
-
+  // Prefer EPUB (epub.js)
   try {
-    const res = await fetch(`books/${filename}`, { method: 'HEAD' });
-    if (res.ok) {
-      return `books/${filename}`;
-    }
-  } catch (e) { /* file not present */ }
+    const r = await fetch(`books/${base}.epub`, { method: 'HEAD' });
+    if (r.ok) return { path: `books/${base}.epub`, type: 'epub' };
+  } catch (e) { /* not present */ }
+
+  // Fall back to PDF (native browser iframe)
+  try {
+    const r = await fetch(`books/${base}.pdf`, { method: 'HEAD' });
+    if (r.ok) return { path: `books/${base}.pdf`, type: 'pdf' };
+  } catch (e) { /* not present */ }
+
   return null;
 }
 
